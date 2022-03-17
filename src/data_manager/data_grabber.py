@@ -1,25 +1,31 @@
 from data_manager.element import Element
 from scipy.io import loadmat
+from tqdm import tqdm                       # for progress bars
+import numpy as np
 import json
 
-def load_data_locations(path_to_json):
-    with open(path_to_json) as f:
-        return json.load(f)
+FREQUENCY = 128
+SMOOTHENING_BIAS = 127
 
-def load_data(locations):
-    p_locations     = load_data_locations(locations)
-    parent_path     = list(p_locations.items())[0][-1]
+# default to a 300 second running average
+# very slow code execution btw
+def moving_average(data, avg_period):
+    weights = np.ones(avg_period) / avg_period
+    return np.convolve(data, weights, mode='valid')
+
+def load_data(path):
+    raw_data = list(loadmat(path).items())[-1][1].transpose()
+    return [ moving_average(i, int((len(i)/FREQUENCY)*SMOOTHENING_BIAS)) for i in raw_data ]
+
+def bucket_data(path_to_data):
+    with open (path_to_data) as f:
+        p_locations     = json.load(f)
+        parent_path     = list(p_locations.items())[0][-1]
     
-    ADHD_bucket     = [
-        Element(True, list(loadmat(parent_path+i).items())[-1][1].transpose())
-        for i in p_locations["ADHD"]
-    ]
-    Control_bucket  = [
-        Element(False, list(loadmat(parent_path+i).items())[-1][1].transpose())
-        for i in p_locations["Control"]
-    ]
+        ADHD_bucket     = [ Element(True, load_data(parent_path+i)) for i in tqdm(p_locations["ADHD"]) ]
+        Control_bucket  = [ Element(False, load_data(parent_path+i)) for i in tqdm(p_locations["Control"]) ]
 
-    return (ADHD_bucket, Control_bucket)
+        return (ADHD_bucket, Control_bucket)
 
 def split_data(buckets):
     # pre-generated random numbers
