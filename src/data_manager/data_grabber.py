@@ -1,15 +1,11 @@
 from data_manager.element import Element
+from data_manager.data_manipulation import moving_average
 from scipy.io import loadmat
 from tqdm import tqdm                       # for progress bars
-import numpy as np
 import json
 
 FREQUENCY = 128
 SMOOTHENING_BIAS = 127
-
-def moving_average(data, avg_period):
-    weights = np.ones(avg_period) / avg_period
-    return np.convolve(data, weights, mode='valid')
 
 def load_data(path):
     raw_data = list(loadmat(path).items())[-1][1].transpose()
