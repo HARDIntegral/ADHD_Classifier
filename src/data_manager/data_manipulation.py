@@ -28,18 +28,19 @@ def avg_value(data):
 # Third Idea:
 # Return the number of peaks and troughs from each channel over a
 #   period of time
-# Update: This idea is not worth going into since peaks are generally 
-#   located in the same area with the same relative magnitude. If I
-#   were to work on this, I would need to find a way to calculate a
-#   shared extrema sensitivity and use that to filter out exteme areas
+def second_gradient(list):
+    return np.gradient(np.gradient(list))
+
 def extremes(data, sensitivity):
     extremes = []
+    upper_max = max([ max(second_gradient(i)) for i in data ])
+    lower_min = min([ min(second_gradient(i)) for i in data ])
+    extr_sensitivity = (upper_max + lower_min)/(2*sensitivity)
+
     for i in data:
-        gradients = np.gradient(np.gradient(i))
-        extr_sensitivity = (max(gradients)+min(gradients))/(2*sensitivity)
         num_extremes = 0
-        for j in i:
-            if abs(j)>extr_sensitivity:
+        for j in second_gradient(i):
+            if abs(j)<extr_sensitivity:
                 num_extremes +=1
         extremes.append(num_extremes)
     return extremes

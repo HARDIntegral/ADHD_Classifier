@@ -7,7 +7,7 @@ from data_manager.data_manipulation import restrict_frontal
 def main():
     training, testing = split_data(bucket_data('data_location.json'))
 
-    patient = training[0]
+    patient = choice(training)
     print(patient.is_ADHD)
     plot(restrict_frontal(patient.EEG_data))
 
