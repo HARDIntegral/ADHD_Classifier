@@ -35,7 +35,8 @@ def split_data(buckets):
                            31, 33, 34, 35, 37, 39, 42, 43, 44, 45, 46, 47, \
                            48, 49, 50, 51, 52, 54, 55, 56, 57, 58, 59]
     
-    training_set    = [ buckets[0][i] for i in adhd_train_fill ] + [ buckets[1][j] for j in control_train_fill ]
-    testing_set     = [ buckets[0][i] for i in adhd_test_rand ] + [ buckets[1][j] for j in control_test_rand ]
+    adhd_training_set   = [ buckets[0][i] for i in adhd_train_fill ] 
+    ctrl_training_set   = [ buckets[1][j] for j in control_train_fill ]
+    testing_set         = [ buckets[0][i] for i in adhd_test_rand ] + [ buckets[1][j] for j in control_test_rand ]
 
-    return (training_set, testing_set)
+    return (adhd_training_set, ctrl_training_set, testing_set)

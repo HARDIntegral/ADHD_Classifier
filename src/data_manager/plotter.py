@@ -4,7 +4,12 @@ from data_manager.data_manipulation import normalize, avg_slope, avg_value, extr
 
 CHANNEL_LABELS = ['Fp1', 'Fp2', 'F3 ', 'F4 ', 'F7 ', 'F8 ', 'Fz ']
 
-def plot(data):
+def data_plotter(x1, y1, x2, y2):
+    plt.scatter(x1, y1, c='#ff0000')
+    plt.scatter(x2, y2, c='#0000ff')
+    plt.show()
+
+def eeg_plot(data):
     data = normalize(data)
     [ plt.plot(i, label=f"Plot: {label}") for label,i in enumerate(data) ]
     plt.legend(CHANNEL_LABELS, loc=4)
