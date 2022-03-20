@@ -16,19 +16,23 @@ def normalize(data):
 
 # First Idea:
 # Return the average slopes of the channels over time
-def avg_slope(elements, restrict=False):
+def avg_slope(elements, restrict=False, norm=False):
     slopes = [] 
+    if restrict:
+        elements = restrict_frontal(elements)
     for element in elements:
-        slopes += [ (i[-1] - i[0])/len(i) for i in element.EEG_data ]
+        slopes += [ (i[-1] - i[0])/len(i) for i in (normalize(element.EEG_data) if norm else element.EEG_data) ]
     return slopes
 
 # Second Idea:
 # Return the average value of the values of a channel over time
 #   if that makes sense
-def avg_value(elements, restrict=False):
+def avg_value(elements, restrict=False, norm=False):
     values = []
+    if restrict:
+        elements = restrict_frontal(elements)
     for element in elements:
-        values += [ sum(i)/len(i) for i in element.EEG_data ]
+        values += [ sum(i)/len(i) for i in (normalize(element.EEG_data) if norm else element.EEG_data) ]
     return values
 
 # Third Idea:
@@ -37,13 +41,15 @@ def avg_value(elements, restrict=False):
 def second_gradient(list):
     return np.gradient(np.gradient(list))
 
-def extremes(elements, sensitivity, restrict=False):
+def extremes(elements, sensitivity, restrict=False, norm=False):
     extremes = []
+    if restrict:
+        elements = restrict_frontal(elements)
+
     for element in elements:
         curve_extremes = []
-        data = element.EEG_data
-        upper_max = max([ max(second_gradient(i)) for i in data ])
-        lower_min = min([ min(second_gradient(i)) for i in data ])
+        upper_max = max([ max(second_gradient(i)) for i in (normalize(element.EEG_data) if norm else element.EEG_data) ])
+        lower_min = min([ min(second_gradient(i)) for i in (normalize(element.EEG_data) if norm else element.EEG_data) ])
         extr_sensitivity = (upper_max + lower_min)/(2*sensitivity)
 
         for i in data:
@@ -53,4 +59,5 @@ def extremes(elements, sensitivity, restrict=False):
                     num_extremes +=1
             curve_extremes.append(num_extremes)
         extremes += curve_extremes
+
     return extremes

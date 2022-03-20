@@ -7,9 +7,9 @@ from data_manager.data_manipulation import avg_slope, avg_value, extremes, restr
 def main():
     adhd, ctrl, testing = split_data(bucket_data('data_location.json'))
     
-    #data_plotter(avg_slope(adhd), avg_value(adhd), avg_slope(ctrl), avg_value(ctrl))
-    #data_plotter(avg_slope(adhd), extremes(adhd, 100), avg_slope(ctrl), extremes(ctrl, 100))
-    #data_plotter(avg_value(adhd), extremes(adhd, 100), avg_value(ctrl), extremes(ctrl, 100))
+    data_plotter(avg_slope(adhd, restrict=True, norm=True), avg_value(adhd, restrict=True, norm=True), avg_slope(ctrl, restrict=True, norm=True), avg_value(ctrl, restrict=True, norm=True))
+    #data_plotter(avg_slope(adhd, True), extremes(adhd, 100, True), avg_slope(ctrl, True), extremes(ctrl, 100, True))
+    #data_plotter(avg_value(adhd, True), extremes(adhd, 100, True), avg_value(ctrl, True), extremes(ctrl, 100, True))
 
     '''
     patient = choice(testing)
