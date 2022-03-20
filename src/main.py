@@ -7,9 +7,11 @@ from data_manager.data_manipulation import avg_slope, avg_value, extremes, restr
 def main():
     adhd, ctrl, testing = split_data(bucket_data('data_location.json'))
     
-    data_plotter(avg_slope(adhd, restrict=True, norm=True), avg_value(adhd, restrict=True, norm=True), avg_slope(ctrl, restrict=True, norm=True), avg_value(ctrl, restrict=True, norm=True))
-    #data_plotter(avg_slope(adhd, True), extremes(adhd, 100, True), avg_slope(ctrl, True), extremes(ctrl, 100, True))
-    #data_plotter(avg_value(adhd, True), extremes(adhd, 100, True), avg_value(ctrl, True), extremes(ctrl, 100, True))
+    #data_plotter(avg_slope(adhd, restrict=True, norm=True), avg_value(adhd, restrict=True, norm=True), avg_slope(ctrl, restrict=True, norm=True), avg_value(ctrl, restrict=True, norm=True))
+    #data_plotter(avg_slope(adhd, restrict=True, norm=True), extremes(adhd, 100, restrict=True, norm=True), avg_slope(ctrl, restrict=True, norm=True), extremes(ctrl, 100, restrict=True, norm=True))
+    
+    # this combination shows the best seperation
+    data_plotter(avg_value(adhd, restrict=True, norm=True), extremes(adhd, 100, restrict=True, norm=True), avg_value(ctrl, restrict=True, norm=True), extremes(ctrl, 100, restrict=True, norm=True))
 
     '''
     patient = choice(testing)

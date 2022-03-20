@@ -52,7 +52,7 @@ def extremes(elements, sensitivity, restrict=False, norm=False):
         lower_min = min([ min(second_gradient(i)) for i in (normalize(element.EEG_data) if norm else element.EEG_data) ])
         extr_sensitivity = (upper_max + lower_min)/(2*sensitivity)
 
-        for i in data:
+        for i in (normalize(element.EEG_data) if norm else element.EEG_data):
             num_extremes = 0
             for j in second_gradient(i):
                 if abs(j)<extr_sensitivity:
