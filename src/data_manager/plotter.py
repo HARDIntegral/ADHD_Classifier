@@ -27,12 +27,4 @@ def eeg_plot(data):
     data = normalize(data)
     [ plt.plot(i, label=f"Plot: {label}") for label,i in enumerate(data) ]
     plt.legend(CHANNEL_LABELS, loc=4)
-
-    print('\nAVG Slope')
-    [ print(f"\tAVG {i[0]} : \t{i[1]}") for i in zip(CHANNEL_LABELS, avg_slope(data)) ]
-    print('AVG Value')
-    [ print(f"\tAVG {i[0]} : \t{i[1]}") for i in zip(CHANNEL_LABELS, avg_value(data)) ]
-    print('Total Extreme Region Area')
-    [ print(f"\t{i[0]}\t: \t{i[1]}") for i in zip(CHANNEL_LABELS, extremes(data, 100)) ]
-
     plt.show()
