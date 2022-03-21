@@ -1,7 +1,7 @@
 from data_manager.element import Element
 from data_manager.data_manipulation import moving_average
 from scipy.io import loadmat
-from tqdm import tqdm                       # for progress bars
+from tqdm import tqdm
 import json
 
 FREQUENCY = 128
