@@ -6,7 +6,7 @@ class RestrictType(Enum):
     NORM = 1
     IVRS = 2
 
-#####################################################################
+#########################################################################################################################
 # These are helper functions
 
 def moving_average(data, avg_period):
@@ -36,7 +36,7 @@ def labels(elements):
 def data_avg(data):
     return sum(data)/len(data)
 
-#####################################################################
+#########################################################################################################################
 # These are ideas as to what I can do to feed data into the models
 
 # First Idea:

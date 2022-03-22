@@ -6,7 +6,11 @@ from data_manager.data_manipulation import RestrictType, avg_slope, avg_value, e
 
 def main():
     adhd, ctrl, testing = split_data(bucket_data('data_location.json'))
-    data_plotter_2d(avg_value(adhd, restrict=RestrictType.IVRS, norm=True), extremes(adhd, 100, restrict=RestrictType.IVRS, norm=True), avg_value(ctrl, restrict=RestrictType.NORM, norm=True), extremes(ctrl, 100, restrict=RestrictType.NORM, norm=True), labels = ['AVG Value', 'Extremes'], legend = ['ADHD', 'Control'])
+    data_plotter_2d(
+        avg_value(adhd, restrict=RestrictType.IVRS, norm=True), extremes(adhd, 100, restrict=RestrictType.IVRS, norm=True), 
+        avg_value(ctrl, restrict=RestrictType.NORM, norm=True), extremes(ctrl, 100, restrict=RestrictType.NORM, norm=True), 
+        labels = ['AVG Value', 'Extremes'], legend = ['ADHD', 'Control']
+    )
     
 if __name__ == '__main__':
     main()
