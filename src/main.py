@@ -6,13 +6,15 @@ from data_manager.data_manipulation import RestrictType, avg_slope, avg_value, e
 
 def main():
     adhd, ctrl, testing = split_data(bucket_data('data_location.json'))
-    
+
     # Mess with this more, cannot find a good sperating pattern yet
     data_plotter_3d(
         avg_slope(adhd, restrict=RestrictType.IVRS, norm=False), avg_value(adhd, restrict=RestrictType.NONE, norm=False), extremes(adhd, 250, restrict=RestrictType.IVRS, norm=False),
         avg_slope(ctrl, restrict=RestrictType.IVRS, norm=False), avg_value(ctrl, restrict=RestrictType.NONE, norm=False), extremes(ctrl, 250, restrict=RestrictType.IVRS, norm=False),
         labels = ['AVG Slope', 'AVG Value', 'Extremes'], legend = ['ADHD', 'Control']
     )
-    
+    # Use this for the logistic regression, not an ideal data set tho
+    data_plotter_1d(extremes(adhd, 250, restrict=RestrictType.IVRS, norm=False)+extremes(ctrl, 250, restrict=RestrictType.IVRS, norm=False), adhd+ctrl, label='AVG Slope')
+
 if __name__ == '__main__':
     main()
