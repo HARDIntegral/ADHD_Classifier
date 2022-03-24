@@ -1,28 +1,25 @@
 from scipy.io import loadmat
 from random import choice
-from data_manager.plotter import data_plotter_2d, data_plotter_3d, eeg_plot
+from data_manager.plotter import data_plotter_1d, data_plotter_2d, data_plotter_3d, eeg_plot
 from data_manager.data_grabber import split_data, bucket_data
-from data_manager.data_manipulation import avg_slope, avg_value, extremes, restrict_frontal
+from data_manager.data_manipulation import RestrictType, avg_slope, avg_value, extremes, restrict_frontal
+
+from models.run_models import run_svm
 
 def main():
     adhd, ctrl, testing = split_data(bucket_data('data_location.json'))
     
-    #data_plotter(avg_slope(adhd, restrict=True, norm=True), avg_value(adhd, restrict=True, norm=True), avg_slope(ctrl, restrict=True, norm=True), avg_value(ctrl, restrict=True, norm=True))
-    #data_plotter(avg_slope(adhd, restrict=True, norm=True), extremes(adhd, 100, restrict=True, norm=True), avg_slope(ctrl, restrict=True, norm=True), extremes(ctrl, 100, restrict=True, norm=True))
+    # work on running the tests
     
-    # this combination shows the best seperation
-    data_plotter_2d(avg_value(adhd, restrict=True, norm=True), extremes(adhd, 100, restrict=True, norm=True), avg_value(ctrl, restrict=True, norm=True), extremes(ctrl, 100, restrict=True, norm=True), labels = ['AVG Value', 'Extremes'], Legends = ['ADHD', 'Control'])
     '''
-    data_plotter_3d(    \
-        avg_value(adhd, restrict=True, norm=True), avg_slope(adhd, restrict=True, norm=True), extremes(adhd, 100, restrict=True, norm=True),    \
-        avg_value(ctrl, restrict=True, norm=True), avg_slope(ctrl, restrict=True, norm=True), extremes(ctrl, 100, restrict=True, norm=True),    \
-        labels = ['AVG Value', 'AVG Slope', 'Extremes'], Legends = ['ADHD', 'Control']  \
+    # Mess with this more, cannot find a good sperating pattern yet
+    data_plotter_3d(
+        avg_slope(adhd, restrict=RestrictType.IVRS, norm=False), avg_value(adhd, restrict=RestrictType.NONE, norm=False), extremes(adhd, 250, restrict=RestrictType.IVRS, norm=False),
+        avg_slope(ctrl, restrict=RestrictType.IVRS, norm=False), avg_value(ctrl, restrict=RestrictType.NONE, norm=False), extremes(ctrl, 250, restrict=RestrictType.IVRS, norm=False),
+        labels = ['AVG Slope', 'AVG Value', 'Extremes'], legend = ['ADHD', 'Control']
     )
-    '''
-    '''
-    patient = choice(testing)
-    print(patient.is_ADHD)
-    eeg_plot(restrict_frontal(patient.EEG_data))
+    # Use this for the logistic regression, not an ideal data set tho
+    #data_plotter_1d(extremes(adhd, 250, restrict=RestrictType.IVRS, norm=False)+extremes(ctrl, 250, restrict=RestrictType.IVRS, norm=False), adhd+ctrl, label='AVG Slope')
     '''
 
 if __name__ == '__main__':
