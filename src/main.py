@@ -5,7 +5,7 @@ from data_manager.plotter import data_plotter_1d, data_plotter_2d, data_plotter_
 from data_manager.data_grabber import split_data, bucket_data
 from data_manager.data_manipulation import RestrictType, labels, avg_slope, avg_value, extremes, restrict_frontal
 
-from models.run_models import run_svm
+from run_models import run_svm
 
 def main():
     adhd, ctrl, testing = split_data(bucket_data('data_location.json'))
@@ -24,7 +24,7 @@ def main():
     adhd_train_set_3d = np.swapaxes(np.array(a1_3d), 0, 1).tolist()
     ctrl_train_set_3d = np.swapaxes(np.array(c1_d3), 0, 1).tolist()
     
-    training_set_3d = np.array(adhd_train_set_3d + ctrl_train_set_3d)
+    training_set_3d = np.array([ [i, e] for i, e in enumerate(adhd_train_set_3d + ctrl_train_set_3d) ], dtype=object)
     training_labels_3d = labels(adhd) + labels(ctrl)
 
     # Formatting 3-D testing data
@@ -33,7 +33,7 @@ def main():
         avg_value(testing, restrict=RestrictType.NONE, norm=False),     \
         extremes(testing, 250, restrict=RestrictType.IVRS, norm=False)  \
     ]
-    testing_set_3d = np.swapaxes(np.array(t_3d), 0, 1)
+    testing_set_3d = np.array([ [i] for i in  np.swapaxes(np.array(t_3d), 0, 1).tolist() ], dtype=object)
     testing_labels_3d = labels(testing)
 
     run_svm(training_set_3d, training_labels_3d, testing_set_3d, testing_labels_3d)
