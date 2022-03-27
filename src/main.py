@@ -10,6 +10,7 @@ from run_models import run_svm, run_knn, run_logreg
 def main():
     adhd, ctrl, testing = split_data(bucket_data('data_location.json'))
 
+
     training_labels = labels(adhd) + labels(ctrl)
     testing_labels = np.array(labels(testing))
 
@@ -53,6 +54,7 @@ def main():
     run_svm(training_set_2d, training_labels, testing_set_2d, testing_labels)
     run_knn(training_set_2d, training_labels, testing_set_2d, testing_labels)
     run_logreg(training_set_1d, training_labels, testing_set_1d, testing_labels)
+
 
 if __name__ == '__main__':
     main()
