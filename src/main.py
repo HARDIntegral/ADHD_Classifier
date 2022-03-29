@@ -18,9 +18,9 @@ def main():
         avg_slope(ctrl, restrict=RestrictType.IVRS, norm=False), avg_value(ctrl, restrict=RestrictType.NONE, norm=False), extremes(ctrl, 250, restrict=RestrictType.IVRS, norm=False),
         labels = ['AVG Slope', 'AVG Value', 'Extremes'], legend = ['ADHD', 'Control']
     )
-    # Use this for the logistic regression, not an ideal data set tho
-    #data_plotter_1d(extremes(adhd, 250, restrict=RestrictType.IVRS, norm=False)+extremes(ctrl, 250, restrict=RestrictType.IVRS, norm=False), adhd+ctrl, label='AVG Slope')
     '''
-
+    # Use this for the logistic regression, not an ideal data set tho
+    data_plotter_1d(extremes(adhd, 250, restrict=RestrictType.IVRS, norm=False)+extremes(ctrl, 250, restrict=RestrictType.IVRS, norm=False), adhd+ctrl, label='AVG Slope')
+    
 if __name__ == '__main__':
     main()
