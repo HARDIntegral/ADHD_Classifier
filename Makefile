@@ -4,6 +4,7 @@ FILE_TYPE := .c
 BUILD_FLAGS := -O1 -g -Wall -Wextra
 PYTHON_HEADERS := "/usr/include/python3.9"
 NUMPY_HEADERS := "/usr/lib/python3.9/site-packages/numpy/core/include/numpy"
+GSL_HEADERS := "/usr/include/gsl"
 SRC_DIR := src/SVM/C_SRC/
 HEADER_DIR := src/SVM/C_HEADERS
 OBJ_DIR := bin/
@@ -29,7 +30,7 @@ build: $(OBJS)
 $(OBJ_DIR)%.o: $(SRC_DIR)%$(FILE_TYPE)
 	@echo [CC] $<
 	@mkdir -p $(@D)
-	@$(CC) $(BUILD_FLAGS) $< -c -o $@ -I$(HEADER_DIR) -I$(PYTHON_HEADERS) -I$(NUMPY_HEADERS) $(DEP_FLAGS) 
+	@$(CC) $(BUILD_FLAGS) $< -c -o $@ -I$(HEADER_DIR) -I$(PYTHON_HEADERS) -I$(GSL_HEADERS) -I$(NUMPY_HEADERS) $(DEP_FLAGS) 
 
 .PHONEY: clean
 clean:

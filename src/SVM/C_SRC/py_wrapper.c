@@ -5,16 +5,12 @@
 #include "opt_main.h"
 
 PyObject* __opt(PyObject* self, PyObject* args) {
-    PyArrayObject* p_cases;
-    PyArrayObject* n_cases;
-    PyArrayObject* p_zetas;
-    PyArrayObject* n_zetas;
-    int C;
+    PyArrayObject* elements;
     int rbf;    // 1 if RBF kernel is used 0 for my kernel
-	if (!PyArg_ParseTuple(args, "OOOOi", &p_cases, &n_cases, &p_zetas, &n_zetas, &C, &rbf))
+	if (!PyArg_ParseTuple(args, "Oi", &elements, &rbf))
 		return NULL;
 
-	return __get_w_width(p_cases, n_cases, p_zetas, n_zetas, C, rbf);
+	return __get_w_width(elements, rbf);
 }
 
 static PyMethodDef methods[] = {
