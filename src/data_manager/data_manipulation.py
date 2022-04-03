@@ -6,7 +6,7 @@ class RestrictType(Enum):
     NORM = 1
     IVRS = 2
 
-#########################################################################################################################
+#################################################################################################################################
 # These are helper functions
 
 def moving_average(data, avg_period):
@@ -36,7 +36,7 @@ def labels(elements):
 def data_avg(data):
     return sum(data)/len(data)
 
-#########################################################################################################################
+#################################################################################################################################
 # These are ideas as to what I can do to feed data into the models
 
 # First Idea:
@@ -44,9 +44,9 @@ def data_avg(data):
 def avg_slope(elements, restrict=RestrictType.NONE, norm=False):
     slopes = [] 
     for element in elements:
-        slopes.insert(len(slopes), [                                                                                    \
-            (restrict_frontal(i, restrict)[-1] - restrict_frontal(i, restrict)[0])/len(restrict_frontal(i, restrict))   \
-            for i in (normalize(element.EEG_data) if norm else element.EEG_data)                                        \
+        slopes.append([                                                                                                         \
+            round((restrict_frontal(i, restrict)[-1] - restrict_frontal(i, restrict)[0])/len(restrict_frontal(i, restrict)), 2) \
+            for i in (normalize(element.EEG_data) if norm else element.EEG_data)                                                \
         ])
     return slopes
 
@@ -56,9 +56,9 @@ def avg_slope(elements, restrict=RestrictType.NONE, norm=False):
 def avg_value(elements, restrict=RestrictType.NONE, norm=False):
     values = []
     for element in elements:
-        values.insert(len(values), [                                                                                    \
-            sum(restrict_frontal(i, restrict))/len(restrict_frontal(i, restrict))                                       \
-            for i in (normalize(element.EEG_data) if norm else element.EEG_data)                                        \
+        values.append([                                                                                                         \
+            round(sum(restrict_frontal(i, restrict))/len(restrict_frontal(i, restrict)), 2)                                     \
+            for i in (normalize(element.EEG_data) if norm else element.EEG_data)                                                \
         ])
     return values
 
@@ -72,13 +72,13 @@ def extremes(elements, sensitivity, restrict=RestrictType.NONE, norm=False):
     extremes = []
     for element in elements:
         curve_extremes = []
-        upper_max = max([                                                                                               \
-            max(second_gradient(restrict_frontal(i, restrict)))                                                         \
-            for i in (normalize(element.EEG_data) if norm else element.EEG_data)                                        \
+        upper_max = max([                                                                                                       \
+            max(second_gradient(restrict_frontal(i, restrict)))                                                                 \
+            for i in (normalize(element.EEG_data) if norm else element.EEG_data)                                                \
         ])
-        lower_min = min([                                                                                               \
-            min(second_gradient(restrict_frontal(i, restrict)))                                                         \
-            for i in (normalize(element.EEG_data) if norm else element.EEG_data)                                        \
+        lower_min = min([                                                                                                       \
+            min(second_gradient(restrict_frontal(i, restrict)))                                                                 \
+            for i in (normalize(element.EEG_data) if norm else element.EEG_data)                                                \
         ])
         extr_sensitivity = (upper_max + lower_min)/(2*sensitivity)
         for i in (normalize(element.EEG_data) if norm else element.EEG_data):
@@ -87,5 +87,5 @@ def extremes(elements, sensitivity, restrict=RestrictType.NONE, norm=False):
                 if abs(j)<extr_sensitivity:
                     num_extremes +=1
             curve_extremes.append(num_extremes)
-        extremes.insert(len(extremes), (curve_extremes))
+        extremes.append(curve_extremes)
     return extremes
