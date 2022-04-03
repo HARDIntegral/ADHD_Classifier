@@ -61,31 +61,3 @@ def avg_value(elements, restrict=RestrictType.NONE, norm=False):
             for i in (normalize(element.EEG_data) if norm else element.EEG_data)                                                \
         ])
     return values
-
-# Third Idea:
-# Return the number of peaks and troughs from each channel over a
-#   period of time
-def second_gradient(list):
-    return np.gradient(np.gradient(list))
-
-def extremes(elements, sensitivity, restrict=RestrictType.NONE, norm=False):
-    extremes = []
-    for element in elements:
-        curve_extremes = []
-        upper_max = max([                                                                                                       \
-            max(second_gradient(restrict_frontal(i, restrict)))                                                                 \
-            for i in (normalize(element.EEG_data) if norm else element.EEG_data)                                                \
-        ])
-        lower_min = min([                                                                                                       \
-            min(second_gradient(restrict_frontal(i, restrict)))                                                                 \
-            for i in (normalize(element.EEG_data) if norm else element.EEG_data)                                                \
-        ])
-        extr_sensitivity = (upper_max + lower_min)/(2*sensitivity)
-        for i in (normalize(element.EEG_data) if norm else element.EEG_data):
-            num_extremes = 0
-            for j in second_gradient(restrict_frontal(i, restrict)):
-                if abs(j)<extr_sensitivity:
-                    num_extremes +=1
-            curve_extremes.append(num_extremes)
-        extremes.append(curve_extremes)
-    return extremes
