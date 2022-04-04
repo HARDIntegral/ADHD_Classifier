@@ -5,6 +5,7 @@ typedef struct _input_data {
     gsl_vector** x;
     int x_size;
     int* y;
+    int use_rbf;
 } input_data_t;
 typedef struct _w_b {
     gsl_vector* w;
@@ -13,13 +14,18 @@ typedef struct _w_b {
 
 gsl_vector* compute_alphas(input_data_t* input);
 w_b* compute_w_b(gsl_vector* alphas, input_data_t* input);
-input_data_t* process_input_data(PyObject* n_array);
+input_data_t* process_input_data(PyObject* n_array, int rbf);
 PyObject* packup(gsl_vector* w, double b);
+
+double k_rbf(gsl_vector* u, gsl_vector* v);
+double k_custom(gsl_vector* u, gsl_vector* v);
+
 double rd();
+double lagrangian(gsl_vector* alphas, void* params);
 
 // Main functions
 PyObject* __get_w_b(PyObject* elements, int rbf) {
-    input_data_t* input = process_input_data(elements);
+    input_data_t* input = process_input_data(elements, rbf);
     gsl_vector* alphas = compute_alphas(input);
     w_b* outputs = compute_w_b(alphas, input);
     return packup(outputs->w, outputs->b);
@@ -29,6 +35,9 @@ gsl_vector* compute_alphas(input_data_t* input) {
     // set a dummy variable for now
     gsl_vector* alphas = gsl_vector_alloc(input->x_size);
     gsl_vector_set_all(alphas, 1.0);
+
+    //TODO: Add the optimization functionality please
+
     return alphas;
 }
 
@@ -46,7 +55,7 @@ w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
     return output;
 }
 
-input_data_t* process_input_data(PyObject* list) {
+input_data_t* process_input_data(PyObject* list, int rbf) {
     Py_ssize_t list_len = PyList_Size(list);
     input_data_t* input = (input_data_t*)malloc(sizeof(input_data_t));
     input->x = (gsl_vector**)malloc(sizeof(gsl_vector)*list_len);
@@ -60,6 +69,7 @@ input_data_t* process_input_data(PyObject* list) {
         input->y[i] = PyBool_Check(is_adhd) ? 1 : -1;
     }
     input->x_size = (int)list_len;
+    input->use_rbf = rbf;
     return input;
 }
 
@@ -75,10 +85,32 @@ PyObject* packup(gsl_vector* w, double b) {
     return return_tup;
 }
 
+// Kernels
+double k_rbf(gsl_vector* u, gsl_vector* v) {
+    return 1;   // dummy return value
+}
+
+double k_custom(gsl_vector* u, gsl_vector* v) {
+    return 1;   // dummy return value
+}
+
 // Helper functions
 double rd() {
     time_t t;
     srand((unsigned int)time(&t));
     uint64_t r53 = ((uint64_t)(rand()) << 21) ^ (rand() >> 2);
     return (double)r53 / 9007199254740991.0; // 2^53 - 1
+}
+
+double lagrangian(gsl_vector* alphas, void* params) {
+    input_data_t* input = (input_data_t*)params;
+    double result = 0;
+    for (int i = 0; i < alphas->size; i++) {
+        for (int j = 0; j < alphas->size; j++) {
+            double computed_k = input->use_rbf ? k_rbf(input->x[i], input->x[j]) : k_custom(input->x[i], input->x[j]);
+            result += 0.5 * computed_k * gsl_vector_get(alphas, i) * gsl_vector_get(alphas, j) * input->y[i] * input->y[j];
+        }
+        result -= gsl_vector_get(alphas, i);
+    }
+    return result;
 }
