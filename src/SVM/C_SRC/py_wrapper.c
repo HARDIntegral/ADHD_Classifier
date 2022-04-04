@@ -10,7 +10,7 @@ PyObject* __opt(PyObject* self, PyObject* args) {
 	if (!PyArg_ParseTuple(args, "Oi", &elements, &rbf))
 		return NULL;
 
-	return __get_w_b_width(elements, rbf);
+	return __get_w_b(elements, rbf);
 }
 
 static PyMethodDef methods[] = {
