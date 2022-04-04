@@ -5,6 +5,7 @@
 #include <Python.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <gsl_vector.h>
 
 // returns vector normal to hyperplane and margin width
