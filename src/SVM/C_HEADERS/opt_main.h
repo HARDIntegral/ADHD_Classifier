@@ -3,6 +3,8 @@
 
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
+#include <stdlib.h>
+#include <gsl_vector.h>
 #include "ndarrayobject.h"
 
 // returns vector normal to hyperplane and margin width

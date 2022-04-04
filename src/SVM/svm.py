@@ -1,12 +1,12 @@
 import numpy as np
-import c_opt
+import SVM.c_opt as co
 
 class SVM():
     def __init__(self):
         pass
 
-    def fit():
-        pass
+    def fit(self, training_set):
+        dummy = co.opt(training_set, 0)
 
-    def test():
+    def test(self, testing_set):
         pass
