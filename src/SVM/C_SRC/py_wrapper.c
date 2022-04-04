@@ -1,16 +1,16 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
-#include "ndarrayobject.h"
+#include <gsl_vector.h>
 
 #include "opt_main.h"
 
 PyObject* __opt(PyObject* self, PyObject* args) {
-    PyArrayObject* elements;
+    PyObject* elements;
     int rbf;    // 1 if RBF kernel is used 0 for my kernel
 	if (!PyArg_ParseTuple(args, "Oi", &elements, &rbf))
 		return NULL;
 
-	return __get_w_width(elements, rbf);
+	return __get_w_b_width(elements, rbf);
 }
 
 static PyMethodDef methods[] = {
