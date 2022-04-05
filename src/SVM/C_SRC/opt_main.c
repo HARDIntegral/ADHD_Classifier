@@ -23,6 +23,7 @@ double k_custom(gsl_vector* u, gsl_vector* v);
 double rd();
 double dot_prod(gsl_vector* u, gsl_vector* v);
 double magnitude(gsl_vector* u);
+void destroy_input(input_data_t* input);
 
 double lagrangian(const gsl_vector* alphas, void* params);
 
@@ -46,7 +47,6 @@ gsl_vector* compute_alphas(input_data_t* input) {
     gsl_vector* ss = gsl_vector_alloc(input->x_size);
     gsl_vector_set_all(alphas, rd());
     gsl_vector_set_all(ss, 1);
-
     min_lagrange.n = input->x_size;
     min_lagrange.f = &lagrangian;
     min_lagrange.params = (void*)input;
@@ -63,14 +63,14 @@ gsl_vector* compute_alphas(input_data_t* input) {
         status = gsl_multimin_test_size(size, 1e-2);
 
         if (status==GSL_SUCCESS) return s->x;
-    } while (status==GSL_CONTINUE && iter<100);
+    } while (status==GSL_CONTINUE && iter<10000);
 
    return alphas;
 }
 
 w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
     w_b* output = (w_b*)malloc(sizeof(w_b));
-    output->w = gsl_vector_alloc(2);
+    output->w = gsl_vector_alloc(input->x[0]->size);
     gsl_vector_set_zero(output->w);
     output->b = 0;
     for (size_t i=0; i<alphas->size; i++) {
@@ -89,9 +89,11 @@ input_data_t* process_input_data(PyObject* list, int rbf) {
     input->y = (int*)malloc(sizeof(int)*list_len);
     for (Py_ssize_t i=0; i<list_len; i++) {
         PyObject* data_tup = PyObject_GetAttrString(PyList_GetItem(list, i), "features");
-        input->x[i] = gsl_vector_alloc((int)PyTuple_Size(data_tup));
+        input->x[i] = gsl_vector_alloc((int)PyList_Size(PyTuple_GetItem(data_tup, 0)));
         for (Py_ssize_t j=0; j<PyTuple_Size(data_tup); j++)
-            gsl_vector_set(input->x[i], j, PyFloat_AsDouble(PyTuple_GetItem(data_tup, j)));
+            gsl_vector_set(input->x[i], j, PyFloat_AsDouble(PyList_GetItem(PyTuple_GetItem(data_tup, 0), j)));
+        for (Py_ssize_t j=0; j<PyTuple_Size(data_tup); j++)
+            gsl_vector_set(input->x[i], j, PyFloat_AsDouble(PyList_GetItem(PyTuple_GetItem(data_tup, 1), j)));
         PyObject* is_adhd = PyObject_GetAttrString(PyList_GetItem(list, i), "is_ADHD");
         input->y[i] = PyBool_Check(is_adhd) ? 1 : -1;
     }
