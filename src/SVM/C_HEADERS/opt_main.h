@@ -5,6 +5,7 @@
 #include <Python.h>
 #include <stdlib.h>
 #include <gsl_vector.h>
+#include <gsl_multimin.h>
 
 // returns vector normal to hyperplane and margin width
 PyObject* __get_w_b(PyObject* elements, int rbf);

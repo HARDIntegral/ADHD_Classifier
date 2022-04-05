@@ -36,10 +36,23 @@ PyObject* __get_w_b(PyObject* elements, int rbf) {
 
 gsl_vector* compute_alphas(input_data_t* input) {
     // set a dummy variable for now
-    gsl_vector* alphas = gsl_vector_alloc(input->x_size);
-    gsl_vector_set_all(alphas, 1.0);
 
     //TODO: Add the optimization functionality please
+    const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
+    gsl_multimin_fminimizer *s = NULL;
+    gsl_multimin_function min_lagrange;
+
+    size_t iter = 0;
+    int status;
+    double size;
+
+    gsl_vector* alphas = gsl_vector_alloc(input->x_size);
+    gsl_vector* ss = gsl_vector_alloc(input->x_size);
+    gsl_vector_set_all(alphas, rd());
+    gsl_vector_set_all(ss, 1);
+
+    min_lagrange.n = 2;
+    min_lagrange.f = &lagrangian;
 
     return alphas;
 }
