@@ -24,7 +24,7 @@ double rd();
 double dot_prod(gsl_vector* u, gsl_vector* v);
 double magnitude(gsl_vector* u);
 
-double lagrangian(gsl_vector* alphas, void* params);
+double lagrangian(const gsl_vector* alphas, void* params);
 
 // Main functions
 PyObject* __get_w_b(PyObject* elements, int rbf) {
@@ -52,7 +52,7 @@ gsl_vector* compute_alphas(input_data_t* input) {
     min_lagrange.params = (void*)input;
 
     gsl_multimin_fminimizer *s = gsl_multimin_fminimizer_alloc(T, input->x_size);
-    gsl_multimin_fminimizer_set(s, &min_lagrange, alphas, ss);  // <--- Segfault
+    gsl_multimin_fminimizer_set(s, &min_lagrange, alphas, ss);
 
     do {
         iter++;
@@ -73,7 +73,7 @@ w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
     output->w = gsl_vector_alloc(2);
     gsl_vector_set_zero(output->w);
     output->b = 0;
-    for (int i=0; i<alphas->size; i++) {
+    for (size_t i=0; i<alphas->size; i++) {
         // safe to manipulate x vectors directly since they will not be used anymore
         gsl_vector_scale(input->x[i], gsl_vector_get(alphas, i) * input->y[i]);
         gsl_vector_add(output->w, input->x[i]); 
@@ -134,28 +134,28 @@ double rd() {
 }
 
 double dot_prod(gsl_vector* u, gsl_vector* v) {
-    gsl_vector* tmp = gsl_block_alloc(u->size);
+    gsl_vector* tmp = gsl_vector_alloc(u->size);
     gsl_vector_set_all(tmp, 1);
     gsl_vector_mul(tmp, u);
     gsl_vector_mul(tmp, v);
     double result = 0;
-    for (int i=0; i<tmp->size; i++)
+    for (size_t i=0; i<tmp->size; i++)
         result += gsl_vector_get(tmp, i);
     return result;
 }
 
 double magnitude(gsl_vector* u) {
     double result = 0;
-    for (int i=0; i<u->size; i++)
+    for (size_t i=0; i<u->size; i++)
         result += pow(gsl_vector_get(u, i), 2);
     return sqrt(result);
 }
 
-double lagrangian(gsl_vector* alphas, void* params) {
+double lagrangian(const gsl_vector* alphas, void* params) {
     input_data_t* input = (input_data_t*)params;
     double result = 0;
-    for (int i=0; i<alphas->size; i++) {
-        for (int j=0; j<alphas->size; j++) {
+    for (size_t i=0; i<alphas->size; i++) {
+        for (size_t j=0; j<alphas->size; j++) {
             double computed_k = input->use_rbf ? k_rbf(input->x[i], input->x[j]) : k_custom(input->x[i], input->x[j]);
             result += 0.5 * computed_k * gsl_vector_get(alphas, i) * gsl_vector_get(alphas, j) * input->y[i] * input->y[j];
         }
