@@ -53,6 +53,10 @@ gsl_vector* compute_alphas(input_data_t* input) {
 
     min_lagrange.n = 2;
     min_lagrange.f = &lagrangian;
+    min_lagrange.params = (void*)input;
+
+    s = gsl_multimin_fminimizer_alloc(T, 2);
+    gsl_multimin_fminimizer_set(s, &min_lagrange, alphas, ss);
 
     return alphas;
 }
