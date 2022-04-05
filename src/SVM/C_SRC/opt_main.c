@@ -51,14 +51,20 @@ gsl_vector* compute_alphas(input_data_t* input) {
     gsl_vector_set_all(alphas, rd());
     gsl_vector_set_all(ss, 1);
 
-    min_lagrange.n = 2;
+    min_lagrange.n = input->x_size;
     min_lagrange.f = &lagrangian;
     min_lagrange.params = (void*)input;
 
-    s = gsl_multimin_fminimizer_alloc(T, 2);
+    s = gsl_multimin_fminimizer_alloc(T, input->x_size);
     gsl_multimin_fminimizer_set(s, &min_lagrange, alphas, ss);
 
-    return alphas;
+    do {
+        iter++;
+        status = gsl_multimin_fminimizer_iterate(s);
+        if (status) break;
+
+        if (status==GSL_SUCCESS) return s->x;
+    } while (status==GSL_CONTINUE && iter<100);
 }
 
 w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
