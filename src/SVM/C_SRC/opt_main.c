@@ -35,9 +35,6 @@ PyObject* __get_w_b(PyObject* elements, int rbf) {
 }
 
 gsl_vector* compute_alphas(input_data_t* input) {
-    // set a dummy variable for now
-
-    //TODO: Add the optimization functionality please
     const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
     gsl_multimin_fminimizer *s = NULL;
     gsl_multimin_function min_lagrange;
