@@ -21,6 +21,9 @@ double k_rbf(gsl_vector* u, gsl_vector* v);
 double k_custom(gsl_vector* u, gsl_vector* v);
 
 double rd();
+double dot_prod(gsl_vector* u, gsl_vector* v);
+double magnitude(gsl_vector* u);
+
 double lagrangian(gsl_vector* alphas, void* params);
 
 // Main functions
@@ -46,7 +49,7 @@ w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
     output->w = gsl_vector_alloc(2);
     gsl_vector_set_zero(output->w);
     output->b = 0;
-    for (int i = 0; i < alphas->size; i++) {
+    for (int i=0; i<alphas->size; i++) {
         // safe to manipulate x vectors directly since they will not be used anymore
         gsl_vector_scale(input->x[i], gsl_vector_get(alphas, i) * input->y[i]);
         gsl_vector_add(output->w, input->x[i]); 
@@ -76,22 +79,26 @@ input_data_t* process_input_data(PyObject* list, int rbf) {
 PyObject* packup(gsl_vector* w, double b) {
     PyObject* return_tup = PyTuple_New(2);
     PyTuple_SetItem(return_tup, 1, PyFloat_FromDouble(b));
-
     PyObject* w_list = PyList_New(2);
     PyList_SetItem(w_list, 0, PyFloat_FromDouble(gsl_vector_get(w, 0)));
     PyList_SetItem(w_list, 1, PyFloat_FromDouble(gsl_vector_get(w, 1)));
     PyTuple_SetItem(return_tup, 0, w_list);
-
     return return_tup;
 }
 
 // Kernels
 double k_rbf(gsl_vector* u, gsl_vector* v) {
-    return 1;   // dummy return value
+    double sigma = 0.1; // just a generic small value for sigma
+    gsl_vector* tmp = gsl_vector_alloc(u->size);
+    gsl_vector_memcpy(tmp, u);
+    gsl_vector_sub(tmp, v);
+    double result = exp(-0.5*pow(magnitude(tmp),2)/pow(sigma,2));
+    gsl_vector_free(tmp);
+    return result;
 }
 
 double k_custom(gsl_vector* u, gsl_vector* v) {
-    return 1;   // dummy return value
+    return dot_prod(u, v);  // dummy return value
 }
 
 // Helper functions
@@ -102,11 +109,29 @@ double rd() {
     return (double)r53 / 9007199254740991.0; // 2^53 - 1
 }
 
+double dot_prod(gsl_vector* u, gsl_vector* v) {
+    gsl_vector* tmp = gsl_block_alloc(u->size);
+    gsl_vector_set_all(tmp, 1);
+    gsl_vector_mul(tmp, u);
+    gsl_vector_mul(tmp, v);
+    double result = 0;
+    for (int i=0; i<tmp->size; i++)
+        result += gsl_vector_get(tmp, i);
+    return result;
+}
+
+double magnitude(gsl_vector* u) {
+    double result = 0;
+    for (int i=0; i<u->size; i++)
+        result += pow(gsl_vector_get(u, i), 2);
+    return sqrt(result);
+}
+
 double lagrangian(gsl_vector* alphas, void* params) {
     input_data_t* input = (input_data_t*)params;
     double result = 0;
-    for (int i = 0; i < alphas->size; i++) {
-        for (int j = 0; j < alphas->size; j++) {
+    for (int i=0; i<alphas->size; i++) {
+        for (int j=0; j<alphas->size; j++) {
             double computed_k = input->use_rbf ? k_rbf(input->x[i], input->x[j]) : k_custom(input->x[i], input->x[j]);
             result += 0.5 * computed_k * gsl_vector_get(alphas, i) * gsl_vector_get(alphas, j) * input->y[i] * input->y[j];
         }
