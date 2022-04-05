@@ -6,7 +6,7 @@ class SVM():
         pass
 
     def fit(self, training_set):
-        dummy = co.opt(training_set, 0)
+        dummy = co.opt(training_set, 1)
         print(dummy)
 
     def test(self, testing_set):

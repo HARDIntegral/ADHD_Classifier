@@ -89,9 +89,9 @@ input_data_t* process_input_data(PyObject* list, int rbf) {
     input->y = (int*)malloc(sizeof(int)*list_len);
     for (Py_ssize_t i=0; i<list_len; i++) {
         PyObject* data_tup = PyObject_GetAttrString(PyList_GetItem(list, i), "features");
-        input->x[i] = gsl_vector_alloc(2);
-        gsl_vector_set(input->x[i], 0, PyFloat_AsDouble(PyTuple_GetItem(data_tup, 0)));
-        gsl_vector_set(input->x[i], 1, PyFloat_AsDouble(PyTuple_GetItem(data_tup, 1)));
+        input->x[i] = gsl_vector_alloc((int)PyTuple_Size(data_tup));
+        for (Py_ssize_t j=0; j<PyTuple_Size(data_tup); j++)
+            gsl_vector_set(input->x[i], j, PyFloat_AsDouble(PyTuple_GetItem(data_tup, j)));
         PyObject* is_adhd = PyObject_GetAttrString(PyList_GetItem(list, i), "is_ADHD");
         input->y[i] = PyBool_Check(is_adhd) ? 1 : -1;
     }
