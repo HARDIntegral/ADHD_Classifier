@@ -1,6 +1,4 @@
 #include "opt_main.h"
-#include "k_rbf.h"
-#include "k_custom.h"
 
 // Prototypes
 typedef struct _input_data {
@@ -61,7 +59,7 @@ gsl_vector* compute_alphas(input_data_t* input) {
         status = gsl_multimin_fminimizer_iterate(s);
         if (status) break;
         size = gsl_multimin_fminimizer_size(s);
-        status = gsl_multimin_test_size(size, 1e-3);
+        status = gsl_multimin_test_size(size, 1e-2);
         if (status==GSL_SUCCESS) return s->x;
     } while (status==GSL_CONTINUE && iter<100000);
 }
@@ -108,6 +106,21 @@ PyObject* packup(gsl_vector* w, double b) {
     PyList_SetItem(w_list, 1, PyFloat_FromDouble(gsl_vector_get(w, 1)));
     PyTuple_SetItem(return_tup, 0, w_list);
     return return_tup;
+}
+
+// Kernels
+double k_rbf(gsl_vector* u, gsl_vector* v) {
+    double sigma = 0.1; // just a generic small value for sigma
+    gsl_vector* tmp = gsl_vector_alloc(u->size);
+    gsl_vector_memcpy(tmp, u);
+    gsl_vector_sub(tmp, v);
+    double result = exp(-0.5*pow(magnitude(tmp),2)/pow(sigma,2));
+    gsl_vector_free(tmp);
+    return result;
+}
+
+double k_custom(gsl_vector* u, gsl_vector* v) {
+    return dot_prod(u, v);  // dummy return value
 }
 
 // Helper functions
