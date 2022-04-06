@@ -36,7 +36,7 @@ PyObject* __get_w_b(PyObject* elements, int rbf) {
 }
 
 gsl_vector* compute_alphas(input_data_t* input) {
-    const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2;
+    const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2rand;
     gsl_multimin_function min_lagrange;
 
     size_t iter = 0;
@@ -60,12 +60,14 @@ gsl_vector* compute_alphas(input_data_t* input) {
         if (status) break;
 
         size = gsl_multimin_fminimizer_size(s);
-        status = gsl_multimin_test_size(size, 1e-2);
+        status = gsl_multimin_test_size(size, 1e-3);
+
+        for (size_t i=0; i<s->x->size; i++) 
+            printf("%f, ", gsl_vector_get(s->x, i));
+        printf("iter:%ld\n", iter);
 
         if (status==GSL_SUCCESS) return s->x;
-    } while (status==GSL_CONTINUE && iter<10000);
-
-   return alphas;
+    } while (status==GSL_CONTINUE && iter<100000);
 }
 
 w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {

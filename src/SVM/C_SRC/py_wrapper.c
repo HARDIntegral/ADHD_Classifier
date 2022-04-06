@@ -13,8 +13,16 @@ PyObject* __opt(PyObject* self, PyObject* args) {
 	return __get_w_b(elements, rbf);
 }
 
+PyObject* __test(PyObject* self, PyObject* args) {
+	PyObject* elements;
+	if (!PyArg_ParseTuple(args, "O", &elements))
+		return NULL;
+	return __test_t(elements);
+}
+
 static PyMethodDef methods[] = {
 	{"opt", __opt, METH_VARARGS, ""},
+	{"test", __test, METH_VARARGS, ""},
 	{NULL, NULL, 0, NULL}
 };
 
