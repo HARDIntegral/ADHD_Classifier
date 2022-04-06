@@ -15,10 +15,8 @@ def main():
 
     # split data into training and testing sets
     training, testing = split_data(adhd, ctrl)
-    print(training[1].features)
-
     # models
-    SVM().fit(training)
+    SVM().fit(training, 1)
 
 if __name__ == '__main__':
     main()

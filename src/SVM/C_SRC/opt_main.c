@@ -58,14 +58,8 @@ gsl_vector* compute_alphas(input_data_t* input) {
         iter++;
         status = gsl_multimin_fminimizer_iterate(s);
         if (status) break;
-
         size = gsl_multimin_fminimizer_size(s);
         status = gsl_multimin_test_size(size, 1e-3);
-
-        for (size_t i=0; i<s->x->size; i++) 
-            printf("%f, ", gsl_vector_get(s->x, i));
-        printf("iter:%ld\n", iter);
-
         if (status==GSL_SUCCESS) return s->x;
     } while (status==GSL_CONTINUE && iter<100000);
 }
