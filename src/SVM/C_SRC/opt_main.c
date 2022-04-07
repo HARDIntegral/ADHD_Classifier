@@ -69,11 +69,6 @@ w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
     output->w = gsl_vector_alloc(input->x[0]->size);
     gsl_vector_set_zero(output->w);
     output->b = 0;
-    for (int i=0; i<input->x_size; i++) {
-        for (size_t j=0; j<input->x[i]->size; j++)
-            printf("%f, ", gsl_vector_get(input->x[i], j));
-        printf("\n");
-    }
     for (size_t i=0; i<alphas->size; i++) {
         // safe to manipulate x vectors directly since they will not be used anymore
         gsl_vector_scale(input->x[i], gsl_vector_get(alphas, i) * input->y[i]);
@@ -89,12 +84,10 @@ input_data_t* process_input_data(PyObject* list, int rbf) {
     input->x = (gsl_vector**)malloc(sizeof(gsl_vector)*list_len);
     input->y = (int*)malloc(sizeof(int)*list_len);
     for (Py_ssize_t i=0; i<list_len; i++) {
-        PyObject* data_tup = PyObject_GetAttrString(PyList_GetItem(list, i), "features");
-        input->x[i] = gsl_vector_alloc((int)PyList_Size(PyTuple_GetItem(data_tup, 0)));
-        for (Py_ssize_t j=0; j<PyTuple_Size(data_tup); j++)
-            gsl_vector_set(input->x[i], j, PyFloat_AsDouble(PyList_GetItem(PyTuple_GetItem(data_tup, 0), j)));
-        for (Py_ssize_t j=0; j<PyTuple_Size(data_tup); j++)
-            gsl_vector_set(input->x[i], j, PyFloat_AsDouble(PyList_GetItem(PyTuple_GetItem(data_tup, 1), j)));
+        PyObject* data_list = PyObject_GetAttrString(PyList_GetItem(list, i), "features");
+        input->x[i] = gsl_vector_alloc((int)PyList_Size(data_list));
+        for (Py_ssize_t j=0; j<PyList_Size(data_list); j++)
+            gsl_vector_set(input->x[i], j, PyFloat_AsDouble(PyList_GetItem(data_list, j)));
         PyObject* is_adhd = PyObject_GetAttrString(PyList_GetItem(list, i), "is_ADHD");
         input->y[i] = PyBool_Check(is_adhd) ? 1 : -1;
     }
@@ -106,9 +99,9 @@ input_data_t* process_input_data(PyObject* list, int rbf) {
 PyObject* packup(gsl_vector* w, double b) {
     PyObject* return_tup = PyTuple_New(2);
     PyTuple_SetItem(return_tup, 1, PyFloat_FromDouble(b));
-    PyObject* w_list = PyList_New(2);
-    PyList_SetItem(w_list, 0, PyFloat_FromDouble(gsl_vector_get(w, 0)));
-    PyList_SetItem(w_list, 1, PyFloat_FromDouble(gsl_vector_get(w, 1)));
+    PyObject* w_list = PyList_New((int)w->size);
+    for (size_t i=0; i<w->size; i++)
+        PyList_SetItem(w_list, i, PyFloat_FromDouble(gsl_vector_get(w, i)));
     PyTuple_SetItem(return_tup, 0, w_list);
     return return_tup;
 }
