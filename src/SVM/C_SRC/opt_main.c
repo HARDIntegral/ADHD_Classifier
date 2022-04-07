@@ -12,18 +12,18 @@ typedef struct _w_b {
     double b;
 } w_b;
 
-gsl_vector* compute_alphas(input_data_t* input);
-w_b* compute_w_b(gsl_vector* alphas, input_data_t* input);
-input_data_t* process_input_data(PyObject* n_array, int rbf);
-PyObject* packup(gsl_vector* w, double b);
+static gsl_vector* compute_alphas(input_data_t* input);
+static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input);
+static input_data_t* process_input_data(PyObject* n_array, int rbf);
+static PyObject* packup(gsl_vector* w, double b);
 
-double k_rbf(gsl_vector* u, gsl_vector* v);
-double k_custom(gsl_vector* u, gsl_vector* v);
+static double k_rbf(gsl_vector* u, gsl_vector* v);
+static double k_custom(gsl_vector* u, gsl_vector* v);
 
-double rd();
-double dot_prod(gsl_vector* u, gsl_vector* v);
-double magnitude(gsl_vector* u);
-void destroy_input(input_data_t* input);
+static double rd();
+static double dot_prod(gsl_vector* u, gsl_vector* v);
+static double magnitude(gsl_vector* u);
+static void destroy_input(input_data_t* input);
 
 double lagrangian(const gsl_vector* alphas, void* params);
 
@@ -35,7 +35,7 @@ PyObject* __get_w_b(PyObject* elements, int rbf) {
     return packup(outputs->w, outputs->b);
 }
 
-gsl_vector* compute_alphas(input_data_t* input) {
+static gsl_vector* compute_alphas(input_data_t* input) {
     const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2rand;
     gsl_multimin_function min_lagrange;
 
@@ -64,7 +64,7 @@ gsl_vector* compute_alphas(input_data_t* input) {
     } while (status==GSL_CONTINUE && iter<100000);
 }
 
-w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
+static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
     w_b* output = (w_b*)malloc(sizeof(w_b));
     output->w = gsl_vector_alloc(input->x[0]->size);
     gsl_vector_set_zero(output->w);
@@ -78,7 +78,7 @@ w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
     return output;
 }
 
-input_data_t* process_input_data(PyObject* list, int rbf) {
+static input_data_t* process_input_data(PyObject* list, int rbf) {
     Py_ssize_t list_len = PyList_Size(list);
     input_data_t* input = (input_data_t*)malloc(sizeof(input_data_t));
     input->x = (gsl_vector**)malloc(sizeof(gsl_vector)*list_len);
@@ -96,7 +96,7 @@ input_data_t* process_input_data(PyObject* list, int rbf) {
     return input;
 }
 
-PyObject* packup(gsl_vector* w, double b) {
+static PyObject* packup(gsl_vector* w, double b) {
     PyObject* return_tup = PyTuple_New(2);
     PyTuple_SetItem(return_tup, 1, PyFloat_FromDouble(b));
     PyObject* w_list = PyList_New((int)w->size);
@@ -107,7 +107,7 @@ PyObject* packup(gsl_vector* w, double b) {
 }
 
 // Kernels
-double k_rbf(gsl_vector* u, gsl_vector* v) {
+static double k_rbf(gsl_vector* u, gsl_vector* v) {
     double sigma = 0.1; // just a generic small value for sigma
     gsl_vector* tmp = gsl_vector_alloc(u->size);
     gsl_vector_memcpy(tmp, u);
@@ -117,19 +117,19 @@ double k_rbf(gsl_vector* u, gsl_vector* v) {
     return result;
 }
 
-double k_custom(gsl_vector* u, gsl_vector* v) {
+static double k_custom(gsl_vector* u, gsl_vector* v) {
     return dot_prod(u, v);  // dummy return value
 }
 
 // Helper functions
-double rd() {
+static double rd() {
     time_t t;
     srand((unsigned int)time(&t));
     uint64_t r53 = ((uint64_t)(rand()) << 21) ^ (rand() >> 2);
     return (double)r53 / 9007199254740991.0; // 2^53 - 1
 }
 
-double dot_prod(gsl_vector* u, gsl_vector* v) {
+static double dot_prod(gsl_vector* u, gsl_vector* v) {
     gsl_vector* tmp = gsl_vector_alloc(u->size);
     gsl_vector_set_all(tmp, 1);
     gsl_vector_mul(tmp, u);
@@ -140,7 +140,7 @@ double dot_prod(gsl_vector* u, gsl_vector* v) {
     return result;
 }
 
-double magnitude(gsl_vector* u) {
+static double magnitude(gsl_vector* u) {
     double result = 0;
     for (size_t i=0; i<u->size; i++)
         result += pow(gsl_vector_get(u, i), 2);

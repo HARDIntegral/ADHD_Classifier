@@ -1,3 +1,5 @@
+
+from sklearn.metrics import classification_report
 import numpy as np
 import SVM.c_opt as co
 
@@ -7,7 +9,7 @@ class SVM():
 
     def fit(self, training_set, rbf):
         (self.w, self.b) = co.opt(training_set, rbf)
-        print(self.w, self.b)
 
     def test(self, testing_set):
-        pass
+        (self.pred, self.true) = co.test(testing_set, self.w, self.b)
+        print(classification_report(self.true, self.pred))
