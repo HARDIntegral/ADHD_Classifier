@@ -23,9 +23,10 @@ static double k_custom(gsl_vector* u, gsl_vector* v);
 static double rd();
 static double dot_prod(gsl_vector* u, gsl_vector* v);
 static double magnitude(gsl_vector* u);
-static void destroy_input(input_data_t* input);
 
-double lagrangian(const gsl_vector* alphas, void* params);
+double f_lagrangian(const gsl_vector* alphas, void* params);
+void df_lagrangian(const gsl_vector* alphas, void* params, gsl_vector* df);
+void fdf_lagrangian(const gsl_vector* alphas, void* params, double* f, gsl_vector* df); 
 
 // Main functions
 PyObject* __get_w_b(PyObject* elements, int rbf) {
@@ -36,32 +37,35 @@ PyObject* __get_w_b(PyObject* elements, int rbf) {
 }
 
 static gsl_vector* compute_alphas(input_data_t* input) {
-    const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2rand;
-    gsl_multimin_function min_lagrange;
+    const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_vector_bfgs2;
+    gsl_multimin_function_fdf min_lagrange;
 
     size_t iter = 0;
     int status;
-    double size;
 
     gsl_vector* alphas = gsl_vector_alloc(input->x[0]->size);
-    gsl_vector* ss = gsl_vector_alloc(input->x[0]->size);
     gsl_vector_set_all(alphas, rd());
-    gsl_vector_set_all(ss, 1);
     min_lagrange.n = input->x[0]->size;
-    min_lagrange.f = &lagrangian;
+    min_lagrange.f = &f_lagrangian;
+    min_lagrange.df = &df_lagrangian;
+    min_lagrange.fdf = &fdf_lagrangian;
     min_lagrange.params = (void*)input;
 
-    gsl_multimin_fminimizer *s = gsl_multimin_fminimizer_alloc(T, input->x[0]->size);
-    gsl_multimin_fminimizer_set(s, &min_lagrange, alphas, ss);
+    gsl_multimin_fdfminimizer *s = gsl_multimin_fdfminimizer_alloc(T, input->x[0]->size);
+    gsl_multimin_fdfminimizer_set(s, &min_lagrange, alphas, 1, 1e-4);
 
     do {
         iter++;
-        status = gsl_multimin_fminimizer_iterate(s);
-        if (status) break;
-        size = gsl_multimin_fminimizer_size(s);
-        status = gsl_multimin_test_size(size, 1e-2);
-        if (status==GSL_SUCCESS) return s->x;
-    } while (status==GSL_CONTINUE && iter<100000);
+        status = gsl_multimin_fdfminimizer_iterate(s);
+        if (status) return NULL;    //  <-- This called because no progress is being made
+        status = gsl_multimin_test_gradient(s->gradient, 1e-2);
+        if (status==GSL_SUCCESS) break;
+    } while (status==GSL_CONTINUE && iter<100);
+    
+    gsl_multimin_fdfminimizer_free(s);
+    gsl_vector_free(alphas);
+
+    return s->x;
 }
 
 static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
@@ -147,7 +151,7 @@ static double magnitude(gsl_vector* u) {
     return sqrt(result);
 }
 
-double lagrangian(const gsl_vector* alphas, void* params) {
+double f_lagrangian(const gsl_vector* alphas, void* params) {
     input_data_t* input = (input_data_t*)params;
     double result = 0;
     for (size_t i=0; i<alphas->size; i++) {
@@ -158,4 +162,21 @@ double lagrangian(const gsl_vector* alphas, void* params) {
         result -= gsl_vector_get(alphas, i);
     }
     return result;
+}
+
+void df_lagrangian(const gsl_vector* alphas, void* params, gsl_vector* df) {
+    input_data_t* input = (input_data_t*)params;
+    for (size_t i=0; i<alphas->size; i++) {
+        double grad_element = 0;
+        for (size_t j=0; j<alphas->size; j++) {
+            double computed_k = input->use_rbf ? k_rbf(input->x[i], input->x[j]) : k_custom(input->x[i], input->x[j]);
+            grad_element += 0.5 * computed_k * input->y[i] * input->y[j];
+        }
+        gsl_vector_set(df, i, grad_element);
+    }
+}
+
+void fdf_lagrangian(const gsl_vector* alphas, void* params, double* f, gsl_vector* df) {
+    *f = f_lagrangian(alphas, params);
+    df_lagrangian(alphas, params, df);
 }
