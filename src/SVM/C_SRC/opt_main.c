@@ -43,15 +43,15 @@ gsl_vector* compute_alphas(input_data_t* input) {
     int status;
     double size;
 
-    gsl_vector* alphas = gsl_vector_alloc(input->x_size);
-    gsl_vector* ss = gsl_vector_alloc(input->x_size);
+    gsl_vector* alphas = gsl_vector_alloc(input->x[0]->size);
+    gsl_vector* ss = gsl_vector_alloc(input->x[0]->size);
     gsl_vector_set_all(alphas, rd());
     gsl_vector_set_all(ss, 1);
-    min_lagrange.n = input->x_size;
+    min_lagrange.n = input->x[0]->size;
     min_lagrange.f = &lagrangian;
     min_lagrange.params = (void*)input;
 
-    gsl_multimin_fminimizer *s = gsl_multimin_fminimizer_alloc(T, input->x_size);
+    gsl_multimin_fminimizer *s = gsl_multimin_fminimizer_alloc(T, input->x[0]->size);
     gsl_multimin_fminimizer_set(s, &min_lagrange, alphas, ss);
 
     do {
@@ -69,6 +69,11 @@ w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
     output->w = gsl_vector_alloc(input->x[0]->size);
     gsl_vector_set_zero(output->w);
     output->b = 0;
+    for (int i=0; i<input->x_size; i++) {
+        for (size_t j=0; j<input->x[i]->size; j++)
+            printf("%f, ", gsl_vector_get(input->x[i], j));
+        printf("\n");
+    }
     for (size_t i=0; i<alphas->size; i++) {
         // safe to manipulate x vectors directly since they will not be used anymore
         gsl_vector_scale(input->x[i], gsl_vector_get(alphas, i) * input->y[i]);
