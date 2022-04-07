@@ -1,7 +1,6 @@
 from data_manager.element import Element
 from data_manager.data_manipulation import moving_average
 from scipy.io import loadmat
-from tqdm import tqdm
 import json
 
 FREQUENCY = 128
@@ -16,8 +15,8 @@ def bucket_data(path_to_data):
         p_locations     = json.load(f)
         parent_path     = list(p_locations.items())[0][-1]
     
-        ADHD_bucket     = [ Element(True, load_data(parent_path+i)) for i in tqdm(p_locations["ADHD"]) ]
-        Control_bucket  = [ Element(False, load_data(parent_path+i)) for i in tqdm(p_locations["Control"]) ]
+        ADHD_bucket     = [ Element(True, load_data(parent_path+i)) for i in p_locations["ADHD"] ]
+        Control_bucket  = [ Element(False, load_data(parent_path+i)) for i in p_locations["Control"] ]
 
         return (ADHD_bucket, Control_bucket)
 
