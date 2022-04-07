@@ -20,7 +20,6 @@ static PyObject* packup(gsl_vector* w, double b);
 static double k_rbf(gsl_vector* u, gsl_vector* v);
 static double k_custom(gsl_vector* u, gsl_vector* v);
 
-static double rd();
 static double dot_prod(gsl_vector* u, gsl_vector* v);
 static double magnitude(gsl_vector* u);
 
@@ -37,14 +36,14 @@ PyObject* __get_w_b(PyObject* elements, int rbf) {
 }
 
 static gsl_vector* compute_alphas(input_data_t* input) {
-    const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_vector_bfgs2;
+    const gsl_multimin_fdfminimizer_type *T = gsl_multimin_fdfminimizer_steepest_descent;
     gsl_multimin_function_fdf min_lagrange;
 
     size_t iter = 0;
     int status;
 
     gsl_vector* alphas = gsl_vector_alloc(input->x[0]->size);
-    gsl_vector_set_all(alphas, rd());
+    gsl_vector_set_all(alphas, 0);
     min_lagrange.n = input->x[0]->size;
     min_lagrange.f = &f_lagrangian;
     min_lagrange.df = &df_lagrangian;
@@ -52,19 +51,18 @@ static gsl_vector* compute_alphas(input_data_t* input) {
     min_lagrange.params = (void*)input;
 
     gsl_multimin_fdfminimizer *s = gsl_multimin_fdfminimizer_alloc(T, input->x[0]->size);
-    gsl_multimin_fdfminimizer_set(s, &min_lagrange, alphas, 1, 1e-4);
+    gsl_multimin_fdfminimizer_set(s, &min_lagrange, alphas, 1, 1e-2);
 
     do {
         iter++;
-        status = gsl_multimin_fdfminimizer_iterate(s);
-        if (status) return NULL;    //  <-- This called because no progress is being made
-        status = gsl_multimin_test_gradient(s->gradient, 1e-2);
+        status = gsl_multimin_fdfminimizer_iterate(s); // <--- why this seg faulting
+        if (status) break;
+        status = gsl_multimin_test_gradient(s->gradient, 1e-1);
         if (status==GSL_SUCCESS) break;
     } while (status==GSL_CONTINUE && iter<100);
     
     gsl_multimin_fdfminimizer_free(s);
     gsl_vector_free(alphas);
-
     return s->x;
 }
 
@@ -126,13 +124,6 @@ static double k_custom(gsl_vector* u, gsl_vector* v) {
 }
 
 // Helper functions
-static double rd() {
-    time_t t;
-    srand((unsigned int)time(&t));
-    uint64_t r53 = ((uint64_t)(rand()) << 21) ^ (rand() >> 2);
-    return (double)r53 / 9007199254740991.0; // 2^53 - 1
-}
-
 static double dot_prod(gsl_vector* u, gsl_vector* v) {
     gsl_vector* tmp = gsl_vector_alloc(u->size);
     gsl_vector_set_all(tmp, 1);
@@ -170,7 +161,7 @@ void df_lagrangian(const gsl_vector* alphas, void* params, gsl_vector* df) {
         double grad_element = 0;
         for (size_t j=0; j<alphas->size; j++) {
             double computed_k = input->use_rbf ? k_rbf(input->x[i], input->x[j]) : k_custom(input->x[i], input->x[j]);
-            grad_element += 0.5 * computed_k * input->y[i] * input->y[j];
+            grad_element += 0.5 * computed_k * input->y[i] * input->y[j] - 1;
         }
         gsl_vector_set(df, i, grad_element);
     }
