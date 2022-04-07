@@ -14,12 +14,14 @@ PyObject* __test_t(PyObject* elements, PyObject* w, PyObject* b) {
     gsl_vector* _w = unpack_w(w);
     double _b = unpack_b(b);
     PyObject* pred_values = PyList_New(PyList_Size(elements));
+    PyObject* true_values = PyList_New(PyList_Size(elements));
     for (Py_ssize_t i=0; i<PyList_Size(elements); i++) {
-        PyObject* curr_f = PyObject_GetAttrString(PyList_GetItem(elements, i), "features");
-        PyList_SetItem(pred_values, i, PyLong_FromLong(classify(unwrap_u(curr_f), _w, _b)));
+        PyObject* curr_e = PyList_GetItem(elements, i);
+        PyList_SetItem(pred_values, i, PyLong_FromLong(classify(unwrap_u(PyObject_GetAttrString(curr_e, "features")), _w, _b)));
+        PyList_SetItem(true_values, i, _PyLong_AsInt(PyObject_GetAttrString(curr_e, "is_ADHD")) == 1 ? PyLong_FromLong(1) : PyLong_FromLong(0));
     }
     PyTuple_SetItem(return_tup, 0, pred_values);
-    PyTuple_SetItem(return_tup, 1, PyObject_GetAttrString(elements, "is_ADHD"));
+    PyTuple_SetItem(return_tup, 1, true_values);
     return return_tup;
 }
 
@@ -35,12 +37,9 @@ static long classify(gsl_vector* _u, gsl_vector* _w, double b) {
     gsl_vector* w = gsl_vector_alloc(_w->size);
     gsl_vector_memcpy(u, _u);
     gsl_vector_memcpy(w, _w);
-    
     long result = dot_prod(u, w) + b;
-    gsl_vector_free(u);
-    gsl_vector_free(w);
-
-    if (result>0) return 1; else return 0;
+    printf("%ld\n", result);
+    if (result>0) {return 1;} else {return 0;}
 }
 
 // Helper functions

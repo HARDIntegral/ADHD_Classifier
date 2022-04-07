@@ -3,6 +3,7 @@
 #include <gsl_vector.h>
 
 #include "opt_main.h"
+#include "test_main.h"
 
 PyObject* __opt(PyObject* self, PyObject* args) {
     PyObject* elements;
