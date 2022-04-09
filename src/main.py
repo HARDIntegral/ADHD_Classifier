@@ -1,8 +1,6 @@
 from data_manager.data_grabber import split_data, bucket_data
 from data_manager.data_manipulation import RestrictType, data_avg, avg_slope, avg_value
 
-from SVM.svm import SVM
-
 def main():
     # load the data
     adhd, ctrl = bucket_data('data_location.json')
@@ -15,10 +13,6 @@ def main():
 
     # split data into training and testing sets
     training, testing = split_data(adhd, ctrl)
-    # models
-    test = SVM()
-    test.fit(training, 0)
-    test.test(testing)
 
 if __name__ == '__main__':
     main()
