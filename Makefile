@@ -22,7 +22,7 @@ DEP_FLAGS = -MMD -MF $(@:.o=.d)
 
 build: $(OBJS)
 	@echo [INFO] Creating Shared Library [$(BUILD_TARGET)] ...
-	@$(CC) -fPIC -shared -o $(LIB_BUILD) $^ -lm -lgsl
+	@$(CC) -fPIC -shared -o $(LIB_BUILD) $^ -lm -lgsl -labsl_base
 	@echo [INFO] [$(LIB)] Created!
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%$(FILE_TYPE)
