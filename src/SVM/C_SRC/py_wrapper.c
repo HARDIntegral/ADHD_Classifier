@@ -1,8 +1,8 @@
 #define PY_SSIZE_T_CLEAN
-#include <Python.h>
-#include <gsl_vector.h>
+#include <python3.10/Python.h>
+#include <gsl/gsl_vector.h>
 
-#include "opt_main.h"
+#include "svm_main.h"
 #include "test_main.h"
 
 PyObject* __opt(PyObject* self, PyObject* args) {

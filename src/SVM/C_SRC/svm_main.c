@@ -1,5 +1,6 @@
-#include "opt_main.h"
-#include "smo.h"
+#include "svm_main.h"
+#include "common.h"
+#include "cv_opt.hpp"
 
 // Prototypes
 typedef struct _w_b {
