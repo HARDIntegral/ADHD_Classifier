@@ -12,6 +12,4 @@ class SVM():
 
     def test(self, testing_set):
         (self.pred, self.true) = co.test(testing_set, self.w, self.b)
-        print(self.w, self.b)
-        print(self.pred, self.true)
-        #print(classification_report(self.true, self.pred))
+        print(classification_report(self.true, self.pred))

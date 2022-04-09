@@ -38,7 +38,6 @@ static long classify(gsl_vector* _u, gsl_vector* _w, double b) {
     gsl_vector_memcpy(u, _u);
     gsl_vector_memcpy(w, _w);
     long result = dot_prod(u, w) + b;
-    printf("%ld\n", result);
     if (result>0) {return 1;} else {return 0;}
 }
 

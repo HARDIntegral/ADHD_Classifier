@@ -1,18 +1,12 @@
 #include "opt_main.h"
+#include "smo.h"
 
 // Prototypes
-typedef struct _input_data {
-    gsl_vector** x;
-    int x_size;
-    int* y;
-    int use_rbf;
-} input_data_t;
 typedef struct _w_b {
     gsl_vector* w;
     double b;
 } w_b;
 
-static gsl_vector* compute_alphas(input_data_t* input);
 static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input);
 static input_data_t* process_input_data(PyObject* n_array, int rbf);
 static PyObject* packup(gsl_vector* w, double b);
@@ -20,10 +14,8 @@ static PyObject* packup(gsl_vector* w, double b);
 static double k_rbf(gsl_vector* u, gsl_vector* v);
 static double k_custom(gsl_vector* u, gsl_vector* v);
 
-static double rd();
 static double dot_prod(gsl_vector* u, gsl_vector* v);
 static double magnitude(gsl_vector* u);
-static void destroy_input(input_data_t* input);
 
 double lagrangian(const gsl_vector* alphas, void* params);
 
@@ -33,35 +25,6 @@ PyObject* __get_w_b(PyObject* elements, int rbf) {
     gsl_vector* alphas = compute_alphas(input);
     w_b* outputs = compute_w_b(alphas, input);
     return packup(outputs->w, outputs->b);
-}
-
-static gsl_vector* compute_alphas(input_data_t* input) {
-    const gsl_multimin_fminimizer_type *T = gsl_multimin_fminimizer_nmsimplex2rand;
-    gsl_multimin_function min_lagrange;
-
-    size_t iter = 0;
-    int status;
-    double size;
-
-    gsl_vector* alphas = gsl_vector_alloc(input->x[0]->size);
-    gsl_vector* ss = gsl_vector_alloc(input->x[0]->size);
-    gsl_vector_set_all(alphas, rd());
-    gsl_vector_set_all(ss, 1);
-    min_lagrange.n = input->x[0]->size;
-    min_lagrange.f = &lagrangian;
-    min_lagrange.params = (void*)input;
-
-    gsl_multimin_fminimizer *s = gsl_multimin_fminimizer_alloc(T, input->x[0]->size);
-    gsl_multimin_fminimizer_set(s, &min_lagrange, alphas, ss);
-
-    do {
-        iter++;
-        status = gsl_multimin_fminimizer_iterate(s);
-        if (status) break;
-        size = gsl_multimin_fminimizer_size(s);
-        status = gsl_multimin_test_size(size, 1e-2);
-        if (status==GSL_SUCCESS) return s->x;
-    } while (status==GSL_CONTINUE && iter<100000);
 }
 
 static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
@@ -122,13 +85,6 @@ static double k_custom(gsl_vector* u, gsl_vector* v) {
 }
 
 // Helper functions
-static double rd() {
-    time_t t;
-    srand((unsigned int)time(&t));
-    uint64_t r53 = ((uint64_t)(rand()) << 21) ^ (rand() >> 2);
-    return (double)r53 / 9007199254740991.0; // 2^53 - 1
-}
-
 static double dot_prod(gsl_vector* u, gsl_vector* v) {
     gsl_vector* tmp = gsl_vector_alloc(u->size);
     gsl_vector_set_all(tmp, 1);
