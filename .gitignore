@@ -185,4 +185,3 @@ dkms.conf
 bin/
 -c
 ADHD_Database/
-.vscode/
