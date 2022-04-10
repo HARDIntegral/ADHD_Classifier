@@ -1,6 +1,8 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
+#include "gsl_vector.h"
+
 typedef struct _input_data {
     gsl_vector** x;
     int x_size;
