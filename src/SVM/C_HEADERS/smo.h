@@ -2,6 +2,7 @@
 #define __SMO_H__
 
 #include <stdlib.h>
+#include <stdint.h>
 #include "common.h"
 #include "gsl_vector.h"
 

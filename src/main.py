@@ -17,7 +17,7 @@ def main():
     training, testing = split_data(adhd, ctrl)
     # models
     test = SVM()
-    test.fit(training, 0)
+    test.fit(training, 0, 2)
     test.test(testing)
 
 if __name__ == '__main__':

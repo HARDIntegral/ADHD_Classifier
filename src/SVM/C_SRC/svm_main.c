@@ -20,9 +20,9 @@ void fdf_lagrangian(const gsl_vector* alphas, void* params, double* f, gsl_vecto
 // Main functions
 PyObject* __get_w_b(PyObject* elements, int rbf, int C) {
     input_data_t* input = process_input_data(elements, rbf, C);
-    gsl_vector* alphas = compute_alphas(input);
-    w_b* outputs = compute_w_b(alphas, input);
-    return packup(outputs->w, outputs->b);
+    opt_output* opt = compute_alphas(input, 1e-2, 3);
+    w_b* outputs = compute_w_b(opt->alphas, input);
+    return packup(outputs->w, opt->b);
 }
 
 static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
@@ -33,8 +33,7 @@ static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
     for (size_t i=0; i<alphas->size; i++) {
         // safe to manipulate x vectors directly since they will not be used anymore
         gsl_vector_scale(input->x[i], gsl_vector_get(alphas, i) * input->y[i]);
-        gsl_vector_add(output->w, input->x[i]); 
-        output->b += gsl_vector_get(alphas, i) * input->y[i];
+        gsl_vector_add(output->w, input->x[i]);
     }
     return output;
 }

@@ -7,8 +7,8 @@ class SVM():
     def __init__(self):
         pass
 
-    def fit(self, training_set, rbf):
-        (self.w, self.b) = co.opt(training_set, rbf)
+    def fit(self, training_set, rbf, C):
+        (self.w, self.b) = co.opt(training_set, rbf, C)
 
     def test(self, testing_set):
         (self.pred, self.true) = co.test(testing_set, self.w, self.b)

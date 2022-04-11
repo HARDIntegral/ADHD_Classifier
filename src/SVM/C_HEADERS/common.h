@@ -10,4 +10,7 @@ typedef struct _input_data {
     int C;
 } input_data_t;
 
+double dot_prod(gsl_vector* u, gsl_vector* v);
+double magnitude(gsl_vector* u);
+
 #endif  /* __COMMON_H__ */
