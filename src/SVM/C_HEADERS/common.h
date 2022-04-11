@@ -7,7 +7,7 @@ typedef struct _input_data {
     int x_size;
     int* y;
     int use_rbf;
-    double C;
+    int C;
 } input_data_t;
 
 #endif  /* __COMMON_H__ */
