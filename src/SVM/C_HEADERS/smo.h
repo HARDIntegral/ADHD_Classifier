@@ -10,6 +10,6 @@ typedef struct opt_output_t {
     double b;
 } opt_output;
 
-opt_output* compute_alphas(input_data_t* input);
+opt_output* compute_alphas(input_data_t* input, double tol, int max_passes);
 
 #endif  /* __SMO_H__ */
