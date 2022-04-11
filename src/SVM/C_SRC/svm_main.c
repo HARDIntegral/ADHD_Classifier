@@ -13,10 +13,6 @@ static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input);
 static input_data_t* process_input_data(PyObject* n_array, int rbf, int C);
 static PyObject* packup(gsl_vector* w, double b);
 
-double f_lagrangian(const gsl_vector* alphas, void* params);
-void df_lagrangian(const gsl_vector* alphas, void* params, gsl_vector* df);
-void fdf_lagrangian(const gsl_vector* alphas, void* params, double* f, gsl_vector* df); 
-
 // Main functions
 PyObject* __get_w_b(PyObject* elements, int rbf, int C) {
     input_data_t* input = process_input_data(elements, rbf, C);
@@ -65,35 +61,4 @@ static PyObject* packup(gsl_vector* w, double b) {
         PyList_SetItem(w_list, i, PyFloat_FromDouble(gsl_vector_get(w, i)));
     PyTuple_SetItem(return_tup, 0, w_list);
     return return_tup;
-}
-
-// Helper functions
-double f_lagrangian(const gsl_vector* alphas, void* params) {
-    input_data_t* input = (input_data_t*)params;
-    double result = 0;
-    for (size_t i=0; i<alphas->size; i++) {
-        for (size_t j=0; j<alphas->size; j++) {
-            double computed_k = input->use_rbf ? k_rbf(input->x[i], input->x[j]) : k_custom(input->x[i], input->x[j]);
-            result += 0.5 * computed_k * gsl_vector_get(alphas, i) * gsl_vector_get(alphas, j) * input->y[i] * input->y[j];
-        }
-        result -= gsl_vector_get(alphas, i);
-    }
-    return result;
-}
-
-void df_lagrangian(const gsl_vector* alphas, void* params, gsl_vector* df) {
-    input_data_t* input = (input_data_t*)params;
-    for (size_t i=0; i<alphas->size; i++) {
-        double grad_element = 0;
-        for (size_t j=0; j<alphas->size; j++) {
-            double computed_k = input->use_rbf ? k_rbf(input->x[i], input->x[j]) : k_custom(input->x[i], input->x[j]);
-            grad_element += 0.5 * computed_k * input->y[i] * input->y[j] - 1;
-        }
-        gsl_vector_set(df, i, grad_element);
-    }
-}
-
-void fdf_lagrangian(const gsl_vector* alphas, void* params, double* f, gsl_vector* df) {
-    *f = f_lagrangian(alphas, params);
-    df_lagrangian(alphas, params, df);
 }

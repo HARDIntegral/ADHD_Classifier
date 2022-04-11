@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <time.h>
 #include "common.h"
 #include "gsl_vector.h"
 
