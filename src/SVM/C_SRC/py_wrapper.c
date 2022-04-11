@@ -8,10 +8,11 @@
 PyObject* __opt(PyObject* self, PyObject* args) {
     PyObject* elements;
     int rbf;    // 1 if RBF kernel is used 0 for my kernel
-	if (!PyArg_ParseTuple(args, "Oi", &elements, &rbf))
+	int C; 		// hyperparameter for optimization
+	if (!PyArg_ParseTuple(args, "Oii", &elements, &rbf, &C))
 		return NULL;
 
-	return __get_w_b(elements, rbf);
+	return __get_w_b(elements, rbf, C);
 }
 
 PyObject* __test(PyObject* self, PyObject* args) {

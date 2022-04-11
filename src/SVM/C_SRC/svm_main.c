@@ -1,6 +1,7 @@
 #include "svm_main.h"
 #include "common.h"
 #include "smo.h"
+#include "kernels.h"
 
 // Prototypes
 typedef struct _w_b {
@@ -9,22 +10,16 @@ typedef struct _w_b {
 } w_b;
 
 static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input);
-static input_data_t* process_input_data(PyObject* n_array, int rbf);
+static input_data_t* process_input_data(PyObject* n_array, int rbf, int C);
 static PyObject* packup(gsl_vector* w, double b);
-
-static double k_rbf(gsl_vector* u, gsl_vector* v);
-static double k_custom(gsl_vector* u, gsl_vector* v);
-
-static double dot_prod(gsl_vector* u, gsl_vector* v);
-static double magnitude(gsl_vector* u);
 
 double f_lagrangian(const gsl_vector* alphas, void* params);
 void df_lagrangian(const gsl_vector* alphas, void* params, gsl_vector* df);
 void fdf_lagrangian(const gsl_vector* alphas, void* params, double* f, gsl_vector* df); 
 
 // Main functions
-PyObject* __get_w_b(PyObject* elements, int rbf) {
-    input_data_t* input = process_input_data(elements, rbf);
+PyObject* __get_w_b(PyObject* elements, int rbf, int C) {
+    input_data_t* input = process_input_data(elements, rbf, C);
     gsl_vector* alphas = compute_alphas(input);
     w_b* outputs = compute_w_b(alphas, input);
     return packup(outputs->w, outputs->b);
@@ -44,7 +39,7 @@ static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
     return output;
 }
 
-static input_data_t* process_input_data(PyObject* list, int rbf) {
+static input_data_t* process_input_data(PyObject* list, int rbf, int C) {
     Py_ssize_t list_len = PyList_Size(list);
     input_data_t* input = (input_data_t*)malloc(sizeof(input_data_t));
     input->x = (gsl_vector**)malloc(sizeof(gsl_vector)*list_len);
@@ -59,6 +54,7 @@ static input_data_t* process_input_data(PyObject* list, int rbf) {
     }
     input->x_size = (int)list_len;
     input->use_rbf = rbf;
+    input->C = C;
     return input;
 }
 
@@ -72,40 +68,7 @@ static PyObject* packup(gsl_vector* w, double b) {
     return return_tup;
 }
 
-// Kernels
-static double k_rbf(gsl_vector* u, gsl_vector* v) {
-    double sigma = 0.1; // just a generic small value for sigma
-    gsl_vector* tmp = gsl_vector_alloc(u->size);
-    gsl_vector_memcpy(tmp, u);
-    gsl_vector_sub(tmp, v);
-    double result = exp(-0.5*pow(magnitude(tmp),2)/pow(sigma,2));
-    gsl_vector_free(tmp);
-    return result;
-}
-
-static double k_custom(gsl_vector* u, gsl_vector* v) {
-    return dot_prod(u, v);  // dummy return value
-}
-
 // Helper functions
-static double dot_prod(gsl_vector* u, gsl_vector* v) {
-    gsl_vector* tmp = gsl_vector_alloc(u->size);
-    gsl_vector_set_all(tmp, 1);
-    gsl_vector_mul(tmp, u);
-    gsl_vector_mul(tmp, v);
-    double result = 0;
-    for (size_t i=0; i<tmp->size; i++)
-        result += gsl_vector_get(tmp, i);
-    return result;
-}
-
-static double magnitude(gsl_vector* u) {
-    double result = 0;
-    for (size_t i=0; i<u->size; i++)
-        result += pow(gsl_vector_get(u, i), 2);
-    return sqrt(result);
-}
-
 double f_lagrangian(const gsl_vector* alphas, void* params) {
     input_data_t* input = (input_data_t*)params;
     double result = 0;
