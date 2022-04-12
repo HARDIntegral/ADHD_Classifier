@@ -16,7 +16,7 @@ static PyObject* packup(gsl_vector* w, double b);
 // Main functions
 PyObject* __get_w_b(PyObject* elements, int rbf, int C) {
     input_data_t* input = process_input_data(elements, rbf, C);
-    opt_output* opt = compute_alphas(input, 1e-2, 3);
+    opt_output* opt = compute_alphas(input, 1e-1, 3);
     w_b* outputs = compute_w_b(opt->alphas, input);
     return packup(outputs->w, opt->b);
 }
@@ -45,7 +45,7 @@ static input_data_t* process_input_data(PyObject* list, int rbf, int C) {
         for (Py_ssize_t j=0; j<PyList_Size(data_list); j++)
             gsl_vector_set(input->x[i], j, PyFloat_AsDouble(PyList_GetItem(data_list, j)));
         PyObject* is_adhd = PyObject_GetAttrString(PyList_GetItem(list, i), "is_ADHD");
-        input->y[i] = PyBool_Check(is_adhd) ? 1 : -1;
+        input->y[i] = PyObject_IsTrue(is_adhd) ? 1 : -1;
     }
     input->x_size = (int)list_len;
     input->use_rbf = rbf;

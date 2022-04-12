@@ -2,6 +2,7 @@
 
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
+#define rand_r(a)           (rand() %  a)
 
 // Prototypes
 double* L_H(input_data_t* input, gsl_vector* alphas, int alpha_i_idx, int alpha_j_idx);
@@ -16,25 +17,45 @@ double rd();
 // Main functions
 opt_output* compute_alphas(input_data_t* input, double tol, int max_passes){
     opt_output* result = (opt_output*) malloc(sizeof(opt_output));
-    result->alphas = gsl_vector_alloc(input->x[0]->size);
-    gsl_vector_set_all(result->alphas, 0);
-    result->b = 0;
+    result->alphas = gsl_vector_alloc(input->x_size);
+    gsl_vector_set_all(result->alphas, rd());
+    result->b = rd();
 
     int passes = 0;
     do {
         int changed_alphas = 0;
-        for (size_t i=0; i<input->x[0]->size; i++) {
+        for (size_t i=0; i<input->x_size; i++) {
             double E_i = f_x(input, i, result->alphas, result->b);
             if (
                 (input->y[i]*E_i<-1*tol && gsl_vector_get(result->alphas, i)<input->C) || 
                 (input->y[i]*E_i>tol && gsl_vector_get(result->alphas, i)>0)
             ) {
-
+                int j;
+                do {j = rand_r(input->x_size);} while(j==i);
+                double E_j = f_x(input, j, result->alphas, result->b);
+                gsl_vector* old_alphas = gsl_vector_alloc(input->x_size);
+                gsl_vector_memcpy(old_alphas, result->alphas);
+                double* l_h = L_H(input, result->alphas, i, j);
+                if (l_h[0]==l_h[2]) continue;
+                double _eta = eta(input, i, j);
+                if (_eta>=0) continue;
+                gsl_vector_set(result->alphas, j, opt_alpha_j(input, result->alphas, i, j, result->b));
+                if (abs(gsl_vector_get(result->alphas, j)-gsl_vector_get(old_alphas, j))<1e-5) continue;
+                gsl_vector_set(result->alphas, i, alpha_i_new(
+                    gsl_vector_get(old_alphas, i), gsl_vector_get(old_alphas, j), 
+                    gsl_vector_get(result->alphas, j), input->y[i], input->y[j]
+                ));
+                result->b = b(input, result->b, i, j, old_alphas, gsl_vector_get(result->alphas, i), gsl_vector_get(result->alphas, j));
+                gsl_vector_free(old_alphas);
+                changed_alphas++;
             }
         }
         if (changed_alphas) passes = 0; else passes++;
     } while (passes < max_passes);
 
+    for (int i=0; i<input->x_size; i++)
+        printf("%f, ", gsl_vector_get(result->alphas, i));
+    printf("\n");
     return result;
 }
 
@@ -89,10 +110,10 @@ double b(input_data_t* input, double b_old, int i_idx, int j_idx, gsl_vector* al
 double f_x(input_data_t* input, int x_idx, gsl_vector* alphas, double b) {
     double result = 0;
     if (input->use_rbf) {
-        for (int i=0; i<input->x[0]->size; i++)
+        for (int i=0; i<input->x_size; i++)
             result += gsl_vector_get(alphas, i)*input->y[i]*k_rbf(input->x[i], input->x[x_idx]);
     } else {
-        for (int i=0; i<input->x[0]->size; i++)
+        for (int i=0; i<input->x_size; i++)
             result += gsl_vector_get(alphas, i)*input->y[i]*k_custom(input->x[i], input->x[x_idx]);
     }
     return result+b;
