@@ -10,11 +10,11 @@ typedef struct _w_b {
 } w_b;
 
 static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input);
-static input_data_t* process_input_data(PyObject* n_array, int rbf, int C);
+static input_data_t* process_input_data(PyObject* n_array, int rbf, double C);
 static PyObject* packup(gsl_vector* w, double b);
 
 // Main functions
-PyObject* __get_w_b(PyObject* elements, int rbf, int C) {
+PyObject* __get_w_b(PyObject* elements, int rbf, double C) {
     input_data_t* input = process_input_data(elements, rbf, C);
     opt_output* opt = compute_alphas(input, 1e-1, 3);
     w_b* outputs = compute_w_b(opt->alphas, input);
@@ -34,7 +34,7 @@ static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
     return output;
 }
 
-static input_data_t* process_input_data(PyObject* list, int rbf, int C) {
+static input_data_t* process_input_data(PyObject* list, int rbf, double C) {
     Py_ssize_t list_len = PyList_Size(list);
     input_data_t* input = (input_data_t*)malloc(sizeof(input_data_t));
     input->x = (gsl_vector**)malloc(sizeof(gsl_vector)*list_len);
@@ -57,8 +57,8 @@ static PyObject* packup(gsl_vector* w, double b) {
     PyObject* return_tup = PyTuple_New(2);
     PyTuple_SetItem(return_tup, 1, PyFloat_FromDouble(b));
     PyObject* w_list = PyList_New((int)w->size);
-    for (size_t i=0; i<w->size; i++)
-        PyList_SetItem(w_list, i, PyFloat_FromDouble(gsl_vector_get(w, i)));
+    for (size_t i=0; i<w->size; i++) 
+        PyList_SetItem(w_list, i, PyFloat_FromDouble(gsl_vector_get(w, i))); 
     PyTuple_SetItem(return_tup, 0, w_list);
     return return_tup;
 }

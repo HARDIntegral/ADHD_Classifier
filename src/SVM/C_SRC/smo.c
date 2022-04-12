@@ -20,7 +20,6 @@ opt_output* compute_alphas(input_data_t* input, double tol, int max_passes){
     result->alphas = gsl_vector_alloc(input->x_size);
     gsl_vector_set_all(result->alphas, rd());
     result->b = rd();
-
     int passes = 0;
     do {
         int changed_alphas = 0;
@@ -52,10 +51,6 @@ opt_output* compute_alphas(input_data_t* input, double tol, int max_passes){
         }
         if (changed_alphas) passes = 0; else passes++;
     } while (passes < max_passes);
-
-    for (int i=0; i<input->x_size; i++)
-        printf("%f, ", gsl_vector_get(result->alphas, i));
-    printf("\n");
     return result;
 }
 

@@ -4,7 +4,9 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <stdlib.h>
+#include <math.h>
 #include <gsl_vector.h>
+#include "common.h"
 
 // returns predictions and true values
 PyObject* __test_t(PyObject* elements, PyObject* w, PyObject* b);

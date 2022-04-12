@@ -9,7 +9,7 @@ typedef struct _input_data {
     int x_size;
     int* y;
     int use_rbf;
-    int C;
+    double C;
 } input_data_t;
 
 double dot_prod(gsl_vector* u, gsl_vector* v);

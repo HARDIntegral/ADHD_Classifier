@@ -8,6 +8,6 @@
 #include <gsl_multimin.h>
 
 // returns vector normal to hyperplane and margin width
-PyObject* __get_w_b(PyObject* elements, int rbf, int C);
+PyObject* __get_w_b(PyObject* elements, int rbf, double C);
 
 #endif  /* __SVM_MAIN_H__ */

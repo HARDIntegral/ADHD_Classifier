@@ -14,4 +14,8 @@ class SVM():
 
     def test(self, testing_set):
         (self.pred, self.true) = co.test(testing_set, self.w, self.b)
+        avg_value = np.average(np.array(self.pred))
+        self.pred = [ i/avg_value for i in self.pred ]
+        self.pred = [ 1 if i>1 else 0 for i in self.pred ]
+        print(self.pred)
         print(classification_report(self.true, self.pred))
