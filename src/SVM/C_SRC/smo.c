@@ -18,8 +18,8 @@ double rd();
 opt_output* compute_alphas(input_data_t* input, double tol, int max_passes){
     opt_output* result = (opt_output*) malloc(sizeof(opt_output));
     result->alphas = gsl_vector_alloc(input->x_size);
-    gsl_vector_set_all(result->alphas, rd());
-    result->b = rd();
+    gsl_vector_set_all(result->alphas, 0.1);
+    result->b = 0.1;
     int passes = 0;
     do {
         int changed_alphas = 0;

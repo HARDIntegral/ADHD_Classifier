@@ -26,10 +26,12 @@ static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
     output->w = gsl_vector_alloc(input->x[0]->size);
     gsl_vector_set_zero(output->w);
     output->b = 0;
-    for (size_t i=0; i<alphas->size; i++) {
-        // safe to manipulate x vectors directly since they will not be used anymore
-        gsl_vector_scale(input->x[i], gsl_vector_get(alphas, i) * input->y[i]);
-        gsl_vector_add(output->w, input->x[i]);
+    for (size_t i=0; i<input->x[0]->size; i++) {
+        double _w = 0;
+        for(int j=0; j<input->x_size; j++)
+            _w += gsl_vector_get(alphas, j) * input->y[j] * gsl_vector_get(input->x[j], i);
+        gsl_vector_set(output->w, i, _w);
+        printf("w %d = %f\n", i+1, _w);  
     }
     return output;
 }

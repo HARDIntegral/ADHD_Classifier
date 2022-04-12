@@ -36,8 +36,7 @@ static double classify(gsl_vector* _u, gsl_vector* _w, double b) {
     gsl_vector* w = gsl_vector_alloc(_w->size);
     gsl_vector_memcpy(u, _u);
     gsl_vector_memcpy(w, _w);
-    double result = dot_prod(u, w) + b;
-    return result;
+    return dot_prod(u, w) + b;
 }
 
 // Helper functions
