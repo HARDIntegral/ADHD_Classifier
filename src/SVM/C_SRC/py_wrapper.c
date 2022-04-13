@@ -16,12 +16,14 @@ PyObject* __opt(PyObject* self, PyObject* args) {
 }
 
 PyObject* __test(PyObject* self, PyObject* args) {
-	PyObject* elements;
-	PyObject* w;
-	PyObject* b;
-	if (!PyArg_ParseTuple(args, "OOO", &elements, &w, &b))
+	PyObject* training;
+	PyObject* testing;
+	PyObject* alphas;
+	double b;
+	int rbf;
+	if (!PyArg_ParseTuple(args, "OOOdi", &training, &testing, &alphas, &b, &rbf))
 		return NULL;
-	return __test_t(elements, w, b);
+	return __test_t(training, testing, alphas, b, rbf);
 }
 
 static PyMethodDef methods[] = {

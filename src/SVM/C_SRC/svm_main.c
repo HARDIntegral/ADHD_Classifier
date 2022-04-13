@@ -1,7 +1,4 @@
 #include "svm_main.h"
-#include "common.h"
-#include "smo.h"
-#include "kernels.h"
 
 // Prototypes
 typedef struct _w_b {
@@ -10,33 +7,16 @@ typedef struct _w_b {
 } w_b;
 
 static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input);
-static input_data_t* process_input_data(PyObject* n_array, int rbf, double C);
-static PyObject* packup(gsl_vector* w, double b);
+static PyObject* packup(opt_output* opt);
 
 // Main functions
 PyObject* __get_w_b(PyObject* elements, int rbf, double C) {
     input_data_t* input = process_input_data(elements, rbf, C);
     opt_output* opt = compute_alphas(input, 1e-1, 3);
-    w_b* outputs = compute_w_b(opt->alphas, input);
-    return packup(outputs->w, opt->b);
+    return packup(opt);
 }
 
-static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input) {
-    w_b* output = (w_b*)malloc(sizeof(w_b));
-    output->w = gsl_vector_alloc(input->x[0]->size);
-    gsl_vector_set_zero(output->w);
-    output->b = 0;
-    for (size_t i=0; i<input->x[0]->size; i++) {
-        double _w = 0;
-        for(int j=0; j<input->x_size; j++)
-            _w += gsl_vector_get(alphas, j) * input->y[j] * gsl_vector_get(input->x[j], i);
-        gsl_vector_set(output->w, i, _w);
-        printf("w %d = %f\n", i+1, _w);  
-    }
-    return output;
-}
-
-static input_data_t* process_input_data(PyObject* list, int rbf, double C) {
+input_data_t* process_input_data(PyObject* list, int rbf, double C) {
     Py_ssize_t list_len = PyList_Size(list);
     input_data_t* input = (input_data_t*)malloc(sizeof(input_data_t));
     input->x = (gsl_vector**)malloc(sizeof(gsl_vector)*list_len);
@@ -55,12 +35,12 @@ static input_data_t* process_input_data(PyObject* list, int rbf, double C) {
     return input;
 }
 
-static PyObject* packup(gsl_vector* w, double b) {
+static PyObject* packup(opt_output* opt) {
     PyObject* return_tup = PyTuple_New(2);
-    PyTuple_SetItem(return_tup, 1, PyFloat_FromDouble(b));
-    PyObject* w_list = PyList_New((int)w->size);
-    for (size_t i=0; i<w->size; i++) 
-        PyList_SetItem(w_list, i, PyFloat_FromDouble(gsl_vector_get(w, i))); 
-    PyTuple_SetItem(return_tup, 0, w_list);
+    PyTuple_SetItem(return_tup, 1, PyFloat_FromDouble(opt->b));
+    PyObject* alpha_list = PyList_New((int)opt->alphas->size);
+    for (size_t i=0; i<opt->alphas->size; i++) 
+        PyList_SetItem(alpha_list, i, PyFloat_FromDouble(gsl_vector_get(opt->alphas, i))); 
+    PyTuple_SetItem(return_tup, 0, alpha_list);
     return return_tup;
 }

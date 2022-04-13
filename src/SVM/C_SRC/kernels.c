@@ -13,5 +13,5 @@ double k_rbf(gsl_vector* u, gsl_vector* v) {
 }
 
 double k_custom(gsl_vector* u, gsl_vector* v) {
-    return dot_prod(u, v)*0;  // dummy return value
+    return dot_prod(u, v);  // dummy return value
 }

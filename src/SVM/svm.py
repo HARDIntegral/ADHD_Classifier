@@ -12,10 +12,12 @@ class SVM():
     def fit(self, rbf, C):
         shuffle(self.training_set)
         self.rbf = rbf
-        (self.w, self.b) = co.opt(self.training_set, self.rbf, C)
+        (self.alphas, self.b) = co.opt(self.training_set, self.rbf, C)
+        print(self.alphas, self.b)
 
     def test(self):
-        (self.pred, self.true) = co.test(self.testing_set, self.w, self.b)
+        (self.pred, self.true) = co.test(self.training_set, self.testing_set, self.alphas, self.b, self.rbf)
+        print(self.pred, self.true)
         avg_value = np.average(np.array(self.pred))
         self.pred = [ i/avg_value for i in self.pred ]
         self.pred = [ 1 if i>1 else 0 for i in self.pred ]

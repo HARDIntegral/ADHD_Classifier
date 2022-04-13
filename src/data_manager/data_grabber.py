@@ -21,8 +21,6 @@ def bucket_data(path_to_data):
         return (ADHD_bucket, Control_bucket)
 
 def split_data(a, b):
-    # this seed was generated from random.org
-    random.seed(65)
     random.shuffle(a)
     random.shuffle(b)
     return (a[12:]+b[12:], a[:12]+b[:12])
