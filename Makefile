@@ -9,7 +9,7 @@ OBJ_DIR := bin/
 LIB_DIR := src/SVM/
 LIB_NAME := c_opt
 BUILD_TARGET := so
-BUILD_FLAGS := -O1 -g -Wall -Wextra
+BUILD_FLAGS := -O2 -g -Wall -Wextra
 
 LIB := $(LIB_NAME).$(BUILD_TARGET)
 LIB_BUILD := $(LIB_DIR)$(LIB)

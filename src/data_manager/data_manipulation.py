@@ -33,13 +33,10 @@ def data_avg(data):
 def avg_slope(elements, restrict=RestrictType.NONE):
     slopes = [] 
     for element in elements:
-        slopes.append(data_avg([
-            round(
-                (restrict_frontal(i, restrict)[-1] - restrict_frontal(i, restrict)[0]) /
-                len(restrict_frontal(i, restrict)), 2
-            )
+        slopes.append([
+            round((restrict_frontal(i, restrict)[-1] - restrict_frontal(i, restrict)[0])/len(restrict_frontal(i, restrict)), 2)
             for i in element.EEG_data
-        ]))
+        ])
     return slopes
 
 # Second Idea:
@@ -48,8 +45,8 @@ def avg_slope(elements, restrict=RestrictType.NONE):
 def avg_value(elements, restrict=RestrictType.NONE):
     values = []
     for element in elements:
-        values.append(data_avg([
+        values.append([
             round(sum(restrict_frontal(i, restrict))/len(restrict_frontal(i, restrict)), 2)
             for i in element.EEG_data
-        ]))
+        ])
     return values
