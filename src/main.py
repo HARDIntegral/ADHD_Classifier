@@ -1,22 +1,22 @@
 from data_manager.data_grabber import split_data, bucket_data
-from data_manager.data_manipulation import RestrictType, avg_slope, avg_value
-
+from data_manager.data_manipulation import avg_slope, avg_value
 from SVM.svm import SVM
+from sys import argv
 
 def main():
     # load the data
     adhd, ctrl = bucket_data('data_location.json')
 
     # assign features to the data
-    for e, d in zip(adhd, list(zip(avg_slope(adhd, restrict = RestrictType.NONE), avg_value(adhd, restrict = RestrictType.NONE)))):
+    for e, d in zip(adhd, list(zip(avg_slope(adhd), avg_value(adhd)))):
         e.add_features(d[0] + d[1])
-    for e, d in zip(ctrl, list(zip(avg_slope(ctrl, restrict = RestrictType.NONE), avg_value(ctrl, restrict = RestrictType.NONE)))):
+    for e, d in zip(ctrl, list(zip(avg_slope(ctrl), avg_value(ctrl)))):
         e.add_features(d[0] + d[1]) 
 
     # split data into training and testing sets
     training, testing = split_data(adhd, ctrl)
     model = SVM(training, testing)
-    model.fit(0, 1)
+    model.fit(int(argv[1]), 1)
     model.test()
 
 if __name__ == '__main__':
