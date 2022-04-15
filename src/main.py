@@ -1,7 +1,6 @@
 from data_manager.data_grabber import split_data, bucket_data
 from data_manager.data_manipulation import avg_slope, avg_value
 from SVM.svm import SVM
-from sys import argv
 
 def main():
     # load the data
@@ -16,7 +15,11 @@ def main():
     # split data into training and testing sets
     training, testing = split_data(adhd, ctrl)
     model = SVM(training, testing)
-    model.fit(int(argv[1]), 1)
+    # train with RBF
+    model.fit(1, 1)
+    model.test()
+    # train with custom kernel
+    model.fit(0, 1)
     model.test()
 
 if __name__ == '__main__':

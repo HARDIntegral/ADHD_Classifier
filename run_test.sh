@@ -2,6 +2,6 @@
 
 for (( i=1; i < 26; i++ ))
 do
-    echo "CUSTOM KERNEL MODEL ${i}"
-    python src/main.py $1
+    echo "TRIAL # ${i}"
+    python src/main.py
 done
