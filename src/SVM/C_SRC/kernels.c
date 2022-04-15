@@ -24,7 +24,7 @@ double k_custom(gsl_vector* u, gsl_vector* v) {
     gsl_vector_memcpy(_v, v);
 
     for (size_t i=0; i<u->size; i++) {
-        if (!(i<4 || i==10 || i==11 || i==16)) {
+        if ((i<4 || i==10 || i==11 || i==16)) {
             gsl_vector_set(u, i, 0);
             gsl_vector_set(v, i, 0);
         }
