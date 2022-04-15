@@ -14,7 +14,7 @@ def bucket_data(path_to_data):
     with open (path_to_data) as f:
         p_locations     = json.load(f)
         parent_path     = list(p_locations.items())[0][-1]
-    
+
         ADHD_bucket     = [ Element(True, load_data(parent_path+i)) for i in p_locations["ADHD"] ]
         Control_bucket  = [ Element(False, load_data(parent_path+i)) for i in p_locations["Control"] ]
 

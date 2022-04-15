@@ -23,5 +23,5 @@ class SVM():
         if self.rbf:
             print('USING RBF KERNEL')
         else:
-            print('USING CUSTOM KERNEL') 
+            print('USING CUSTOM KERNEL')
         print(classification_report(self.true, self.pred))

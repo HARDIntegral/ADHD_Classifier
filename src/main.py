@@ -10,15 +10,13 @@ def main():
     for e, d in zip(adhd, list(zip(avg_slope(adhd), avg_value(adhd)))):
         e.add_features(d[0] + d[1])
     for e, d in zip(ctrl, list(zip(avg_slope(ctrl), avg_value(ctrl)))):
-        e.add_features(d[0] + d[1]) 
+        e.add_features(d[0] + d[1])
 
     # split data into training and testing sets
     training, testing = split_data(adhd, ctrl)
     model = SVM(training, testing)
-    # train with RBF
     model.fit(1, 1)
     model.test()
-    # train with custom kernel
     model.fit(0, 1)
     model.test()
 

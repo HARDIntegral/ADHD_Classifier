@@ -1,7 +1,7 @@
 #!/bin/bash
 
-for (( i=1; i < 26; i++ ))
+for (( i=1; i < 51; i++ ))
 do
     echo "TRIAL # ${i}"
-    python src/main.py
+    python3 src/main.py
 done
