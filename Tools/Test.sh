@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 root=$(dirname $0)
-main="${root}/../src/main.py"
+main="${root}/../Source/main.py"
 
 for (( i=1; i < 51; i++ ))
 do
