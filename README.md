@@ -1,3 +1,4 @@
+
 # ADHD Classifier [![Badge License]][License]
 
 ***Tests for my Research Project***
@@ -11,25 +12,24 @@
 - Some modules:
   
   - `numpy`
-  
   - `sklearn`
   
-  
-  Install them with:
+  ### PIP
   
   ```sh
   pip install numpy sklearn
   ```
- - **[C]**
- - Some modules:
-   -  `Python 3.* headers`
-   -  `GNU Scientific Library`
+- **[C]**
+- Some modules:
+  -  `Python 3.* headers`
+  -  `GNU Scientific Library`
  
- Install them with (assuming Ubuntu):
- ```sh
- sudo apt-get install python3-dev ibgsl0ldbl
- ```
- <br>
+  ### Ubuntu
+  ```sh
+  sudo apt install python3-dev ibgsl0ldbl
+  ```
+
+<br>
 
 <!----------------------------------------------------------------------------->
 
