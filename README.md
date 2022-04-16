@@ -9,7 +9,7 @@
 
 - **[Python 3]**
 
-- Some modules:
+  **\+ Modules:**
   
   - `numpy`
   - `sklearn`
@@ -19,8 +19,10 @@
   ```sh
   pip install numpy sklearn
   ```
+  
 - **[C]**
-- Some modules:
+
+  **\+ Modules:**
   -  `Python 3.* headers`
   -  `GNU Scientific Library`
  
