@@ -2,66 +2,78 @@
 #	Configuaration
 
 CC := gcc
-FILE_TYPE := .c
-PYTHON_HEADERS := "/usr/include/python3.9"
-GSL_HEADERS := "/usr/include/gsl"
+Extension := .c
+Python := "/usr/include/python3.9"
+GSL := "/usr/include/gsl"
+
 
 #	C Source Code
 
-SRC_DIR := Source/SVM/C_SRC/
-HEADER_DIR := Source/SVM/C_HEADERS
+Source := Source/SVM/Source/
+Include := Source/SVM/Include
+
 
 #	Build Folder
 
-OBJ_DIR := bin/
+Build := bin/
 
-#	Library
-
-LIB_DIR := Source/SVM/
-LIB_NAME := c_opt
 
 #	Build Target
 
-BUILD_TARGET := so
-BUILD_FLAGS := -O2 -g -Wall -Wextra
+Target := so
+Flags := -O2 -g -Wall -Wextra
 
 
-LIB := $(LIB_NAME).$(BUILD_TARGET)
-LIB_BUILD := $(LIB_DIR)$(LIB)
+#	Library
+
+LibraryFolder := Source/SVM/
+LibraryName := c_opt
+Library := $(LibraryName).$(Target)
+LibraryPath := $(LibraryFolder)$(Library)
 
 
 #	Loading in file locations
 
-SRCS := 										\
-	$(wildcard $(SRC_DIR)**/**$(FILE_TYPE)) 	\
-	$(wildcard $(SRC_DIR)*$(FILE_TYPE))
+Sources := 									\
+	$(wildcard $(Source)**/**$(Extension))	\
+	$(wildcard $(Source)*$(Extension))
 
-OBJS := 														\
-	$(patsubst $(SRC_DIR)%$(FILE_TYPE), $(OBJ_DIR)%.o, $(SRCS))
+Objects := 													   	\
+	$(patsubst $(Source)%$(Extension), $(Build)%.o, $(Sources))
 
 
 #	Handling automatic dependency tracking
 
-DEPS := $(patsubst %.o, %.d, $(OBJS))
+Dependencies := $(patsubst %.o, %.d, $(Objects))
+-include $(Dependencies)
 
--include $(DEPS)
-
-DEP_FLAGS = -MMD -MF $(@:.o=.d)
+DependenciesFlags = -MMD -MF $(@:.o=.d)
 
 
-build: $(OBJS)
-	@echo [INFO] Creating Shared Library [$(BUILD_TARGET)] ...
-	@$(CC) -fPIC -shared -o $(LIB_BUILD) $^ -lm -lgsl
-	@echo [INFO] [$(LIB)] Created!
+#	Build Shared Library
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%$(FILE_TYPE)
+build: $(Objects)
+	@echo [INFO] Creating Shared Library [$(Target)] ...
+	@$(CC) -fPIC -shared -o $(LibraryPath) $^ -lm -lgsl
+	@echo [INFO] [$(Library)] Created!
+
+$(Build)%.o: $(Source)%$(Extension)
 	@echo [CC] $<
 	@mkdir -p $(@D)
-	@$(CC) -fPIC $< -c -o $@ $(BUILD_FLAGS) $(DEP_FLAGS) -I$(PYTHON_HEADERS) -I$(GSL_HEADERS) -I$(HEADER_DIR)
+	@$(CC) -fPIC $< -c -o $@ 	\
+		$(Flags) 				\
+		$(DependenciesFlags) 	\
+		-I$(Python) 			\
+		-I$(GSL) 				\
+		-I$(Include)
 
 
 .PHONEY: clean
+
+
+#	Reset Build Environment
+
 clean:
-	@rm -rf $(OBJ_DIR)
+	@rm -rf $(Build)
 	@rm -rf $(DEPS)
-	@rm $(LIB_BUILD)
+	@rm $(LibraryPath)
