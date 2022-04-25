@@ -1,4 +1,3 @@
-
 # ADHD Classifier [![Badge License]][License]
 
 ***Tests for my Research Project***
@@ -29,7 +28,7 @@
   ### Ubuntu
   
   ```sh
-  sudo apt install python3-dev libgsl-dev
+  sudo apt install python3-dev ibgsl0ldbl
   ```
 
 <br>
@@ -42,7 +41,15 @@
 *Build the C library with:*
 
 ```sh
-make build
+Tools/Build.sh
+```
+
+<br>
+
+*Remove the C library and Object Files with:*
+
+```sh
+Tools/Clean.sh
 ```
 
 <br>
