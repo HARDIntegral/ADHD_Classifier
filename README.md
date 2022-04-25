@@ -33,6 +33,27 @@
   ```
 
 <br>
+<br>
+
+## Usage
+
+### Shared Library
+
+*Build the C library with:*
+
+```sh
+Tools/Build.sh
+```
+
+<br>
+
+### Testing
+
+*Execute the test suite with:*
+
+```sh
+Tools/Test.sh
+```
 
 <!----------------------------------------------------------------------------->
 
