@@ -40,7 +40,6 @@
 
 [License]: LICENSE
 
-
 [Python 3]: https://www.python.org/downloads/
 [C]: https://gcc.gnu.org/
 
