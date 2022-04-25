@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 root=$(dirname $0)
-# makefile="${root}/../Source"
+library="${root}/../Source/SVM"
 
-cd "${root}/../Source/SVM"
+cd $library
 
 make $1
 
