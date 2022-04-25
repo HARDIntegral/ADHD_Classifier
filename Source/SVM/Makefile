@@ -9,13 +9,13 @@ GSL := "/usr/include/gsl"
 
 #	C Source Code
 
-Source := Source/SVM/Source/
-Include := Source/SVM/Include
+Source := Source
+Include := Include
 
 
 #	Build Folder
 
-Build := bin/
+Build := ../../bin/
 
 
 #	Build Target
@@ -26,7 +26,7 @@ Flags := -O2 -g -Wall -Wextra
 
 #	Library
 
-LibraryFolder := Source/SVM/
+LibraryFolder := ./
 LibraryName := c_opt
 Library := $(LibraryName).$(Target)
 LibraryPath := $(LibraryFolder)$(Library)
