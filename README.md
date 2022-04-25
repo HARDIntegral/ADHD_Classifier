@@ -29,7 +29,7 @@
   ### Ubuntu
   
   ```sh
-  sudo apt install python3-dev ibgsl0ldbl
+  sudo apt install python3-dev libgsl-dev
   ```
 
 <br>
@@ -42,7 +42,7 @@
 *Build the C library with:*
 
 ```sh
-Tools/Build.sh
+make build
 ```
 
 <br>
