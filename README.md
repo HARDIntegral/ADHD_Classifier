@@ -23,7 +23,7 @@
 - **[C]**
 
   **\+ Modules:**
-  -  `Python 3.* headers`
+  -  `Python 3.x headers`
   -  `GNU Scientific Library`
  
   ### Ubuntu

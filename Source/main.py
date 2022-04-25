@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from data_manager.data_grabber import split_data, bucket_data
 from data_manager.data_manipulation import avg_slope, avg_value
 from SVM.svm import SVM
