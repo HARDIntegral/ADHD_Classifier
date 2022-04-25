@@ -4,7 +4,7 @@ from SVM.svm import SVM
 
 def main():
     # load the data
-    adhd, ctrl = bucket_data('data_location.json')
+    adhd, ctrl = bucket_data('Data/data_location.json')
 
     # assign features to the data
     for e, d in zip(adhd, list(zip(avg_slope(adhd), avg_value(adhd)))):

@@ -18,6 +18,7 @@ data = [RBF, CUSTOM]
 
 x_min = 30.0
 x_max = 80.0
+# Numbers hard coded from LibreOffice Calc
 m_rbf = 51.296
 m_cus = 54.084
 s_rbf = 1.87575526957151
