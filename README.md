@@ -27,12 +27,12 @@
   -  `GNU Scientific Library`
  
   ### Ubuntu
+  
   ```sh
   sudo apt install python3-dev ibgsl0ldbl
   ```
 
 <br>
-
 
 <!----------------------------------------------------------------------------->
 
