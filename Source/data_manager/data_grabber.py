@@ -1,26 +1,56 @@
-from data_manager.element import Element
+
 from data_manager.data_manipulation import moving_average
+from data_manager.element import Element
 from scipy.io import loadmat
-import json, random
+from random import shuffle
+from json import load as asJSON
 
 FREQUENCY = 128
 SMOOTHENING_BIAS = 127
 
+
+def bucket_data(path):
+    '''
+    Load ADHD / Control data as buckets
+    
+    Parameters
+    ----------
+    path : str
+        Path to the list of dataset paths
+    
+    Returns
+    -------
+    ADHD : array
+        Bucket of ADHD data elements
+    Control : array
+        Bucket of Control data elements
+    '''
+    
+    with open(path) as file:
+        
+        locations = asJSON(file)
+        folder = list(locations.items())[0][-1]
+
+        ADHD    = [ Element(True ,load_data(folder + i)) for i in locations['ADHD']    ]
+        Control = [ Element(False,load_data(folder + i)) for i in locations['Control'] ]
+
+        return ( ADHD , Control )
+
+
 def load_data(path):
-    raw_data = list(loadmat(path).items())[-1][1].transpose()
-    return [ moving_average(i, int((len(i)/FREQUENCY)*SMOOTHENING_BIAS)) for i in raw_data ]
+    
+    raw = list(loadmat(path).items())[-1][1].transpose()
+    
+    return [ interpret(value) for value in raw ]
 
-def bucket_data(path_to_data):
-    with open (path_to_data) as f:
-        p_locations     = json.load(f)
-        parent_path     = list(p_locations.items())[0][-1]
 
-        ADHD_bucket     = [ Element(True, load_data(parent_path+i)) for i in p_locations["ADHD"] ]
-        Control_bucket  = [ Element(False, load_data(parent_path+i)) for i in p_locations["Control"] ]
+def interpret(value):
+    return moving_average(value,int((len(value) / FREQUENCY) * SMOOTHENING_BIAS))
 
-        return (ADHD_bucket, Control_bucket)
 
-def split_data(a, b):
-    random.shuffle(a)
-    random.shuffle(b)
-    return (a[12:]+b[12:], a[:12]+b[:12])
+def split_data(a,b):
+
+    shuffle(a)
+    shuffle(b)
+
+    return ( a[12:] + b[12:] , a[:12] + b[:12] )
