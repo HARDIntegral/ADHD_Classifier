@@ -1,4 +1,4 @@
-from enum import Enum
+
 from numpy import ones , convolve
 
 
@@ -21,30 +21,27 @@ def data_avg(data):
 # First Idea:
 # Return the average slopes of the channels over time
 def avg_slope(elements):
-    return flatten([ calcSlope(element) for element in elements ])
-    
-def calcSlopes(element):
-    return [ calcSlope for value in element.EEG_data ]
+    slopes = [] 
+    [ slopes.append(calculate_slopes(element)) for element in elements ]
+    return slopes
 
-def calcSlope(value):
-    return round((value[-1] - value[0]) / len(value),2)
+def calculate_slopes(element):
+    return [ calculate_slope(value) for value in element.EEG_data ]
 
-    
+def calculate_slope(data):
+    return round((data[-1] - data[0])/len(data), 2) 
 
 
 # Second Idea:
 # Return the average value of the values of a channel over time
 #   if that makes sense
 def avg_value(elements):
-    return flatten([ calcValues for element in elements ])
-    
-def calcValues(element):
-    return [ calcValue(value) for value in element.EEG_data ]
-    
-def calcValue(value):
-    return round(sum(value) / len(value),2)
-    
-    
-    
-def flatten(list):
-    return [ item for sublist in list for item in sublist ]
+    values = []
+    [ values.append(calculate_avg_values(element)) for element in elements ]
+    return values
+
+def calculate_avg_values(element):
+    return [ calculate_avg_value for value in element.EEG_data ]
+
+def calculate_avg_value(data):
+    return round(sum(data)/len(data), 2)

@@ -1,4 +1,3 @@
-
 from data_manager.data_manipulation import moving_average
 from data_manager.element import Element
 from scipy.io import loadmat
