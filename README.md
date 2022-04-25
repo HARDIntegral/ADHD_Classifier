@@ -49,7 +49,7 @@ Tools/Build.sh
 *Remove the C library and Object Files with:*
 
 ```sh
-Tools/Clean.sh
+Tools/Build.sh clean
 ```
 
 <br>
