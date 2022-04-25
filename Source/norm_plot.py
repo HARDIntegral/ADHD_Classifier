@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from numpy import linspace
 import matplotlib.pyplot as plt
 import scipy.stats as ss

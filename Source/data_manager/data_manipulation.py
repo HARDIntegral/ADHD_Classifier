@@ -1,15 +1,19 @@
 from enum import Enum
-import numpy as np
+from numpy import ones , convolve
+
 
 ###################################################################################################
 # These are helper functions
 
-def moving_average(data, avg_period):
-    weights = np.ones(avg_period) / avg_period
-    return np.convolve(data, weights, mode='valid')
+def moving_average(data,avg_period):
+    
+    weights = ones(avg_period) / avg_period
+    
+    return convolve(data,weights,mode = 'valid')
 
 def data_avg(data):
-    return sum(data)/len(data)
+    return sum(data) / len(data)
+
 
 ###################################################################################################
 # These are ideas as to what I can do to feed data into the models
@@ -17,16 +21,30 @@ def data_avg(data):
 # First Idea:
 # Return the average slopes of the channels over time
 def avg_slope(elements):
-    slopes = [] 
-    for element in elements:
-        slopes.append([ round((i[-1] - i[0])/len(i), 2) for i in element.EEG_data ])
-    return slopes
+    return flatten([ calcSlope(element) for element in elements ])
+    
+def calcSlopes(element):
+    return [ calcSlope for value in element.EEG_data ]
+
+def calcSlope(value):
+    return round((value[-1] - value[0]) / len(value),2)
+
+    
+
 
 # Second Idea:
 # Return the average value of the values of a channel over time
 #   if that makes sense
 def avg_value(elements):
-    values = []
-    for element in elements:
-        values.append([ round(sum(i)/len(i), 2) for i in element.EEG_data ])
-    return values
+    return flatten([ calcValues for element in elements ])
+    
+def calcValues(element):
+    return [ calcValue(value) for value in element.EEG_data ]
+    
+def calcValue(value):
+    return round(sum(value) / len(value),2)
+    
+    
+    
+def flatten(list):
+    return [ item for sublist in list for item in sublist ]
