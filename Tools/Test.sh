@@ -6,5 +6,5 @@ main="${root}/../Source/main.py"
 for (( i=1; i < 251; i++ ))
 do
     echo "TRIAL # ${i}"
-    python3 "$main"
+    python3.10 "$main"
 done

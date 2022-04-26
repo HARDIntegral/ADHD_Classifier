@@ -44,9 +44,7 @@ class SVM():
             case 2: 
                 print('USING POLYNOMIAL KERNEL')
             case 3:
-                print('USING ANOVA POLYNOMIAL HYBRID KERNEL')
-            case 4:
-                print('USING LINEAR SPLINE KERNEL')
+                print('USING RBF POLYNOMIAL HYBRID KERNEL')
             case _:
                 pass
             
