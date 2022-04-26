@@ -8,6 +8,7 @@ double dot_prod(gsl_vector* u, gsl_vector* v) {
     double result = 0;
     for (size_t i=0; i<tmp->size; i++)
         result += gsl_vector_get(tmp, i);
+    gsl_vector_free(tmp);
     return result;
 }
 

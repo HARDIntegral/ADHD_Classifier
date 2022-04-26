@@ -7,12 +7,12 @@
 
 PyObject* __opt(PyObject* self, PyObject* args) {
     PyObject* elements;
-    int rbf;    // 1 if RBF kernel is used 0 for my kernel
+    int k_type;    // 1 if RBF kernel is used 0 for my kernel
 	double C;	// hyperparameter for optimization
-	if (!PyArg_ParseTuple(args, "Oid", &elements, &rbf, &C))
+	if (!PyArg_ParseTuple(args, "Oid", &elements, &k_type, &C))
 		return NULL;
 
-	return __get_w_b(elements, rbf, C);
+	return __get_w_b(elements, k_type, C);
 }
 
 PyObject* __test(PyObject* self, PyObject* args) {

@@ -104,12 +104,23 @@ double b(input_data_t* input, double b_old, int i_idx, int j_idx, gsl_vector* al
 // Helper functions
 double f_x(input_data_t* input, int x_idx, gsl_vector* alphas, double b) {
     double result = 0;
-    if (input->use_rbf) {
-        for (int i=0; i<input->x_size; i++)
-            result += gsl_vector_get(alphas, i)*input->y[i]*k_rbf(input->x[i], input->x[x_idx]);
-    } else {
-        for (int i=0; i<input->x_size; i++)
-            result += gsl_vector_get(alphas, i)*input->y[i]*k_custom(input->x[i], input->x[x_idx]);
+    switch (input->k_type) {
+        case 0:
+            for (int i=0; i<input->x_size; i++)
+                result += gsl_vector_get(alphas, i)*input->y[i]*k_rbf(input->x[i], input->x[x_idx]);
+            break;
+        case 1:
+            for (int i=0; i<input->x_size; i++)
+                result += gsl_vector_get(alphas, i)*input->y[i]*k_m_rbf(input->x[i], input->x[x_idx]);
+            break;
+        case 2:
+            for (int i=0; i<input->x_size; i++)
+                result += gsl_vector_get(alphas, i)*input->y[i]*k_m_poly_3(input->x[i], input->x[x_idx]);
+            break;
+        case 3:
+            for (int i=0; i<input->x_size; i++)
+                result += gsl_vector_get(alphas, i)*input->y[i]*k_m_rbf_poly_3_3(input->x[i], input->x[x_idx]);
+            break;
     }
     return result+b;
 }

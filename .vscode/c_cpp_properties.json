@@ -3,7 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "~/Dev/ADHD_Classifier/src/SVM/C_HEADERS/*",
+                "~/Dev/ADHD_Classifier/Source/SVM/Include/*",
                 "/usr/include/**"
             ],
             "defines": [],

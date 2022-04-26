@@ -2,7 +2,7 @@
 
 from data_manager.data_grabber import split_data, bucket_data
 from data_manager.data_manipulation import avg_slope, avg_value
-from SVM.svm import SVM
+from SVM.svm import Kernels, SVM
 
 def main():
     
@@ -20,9 +20,13 @@ def main():
     training , testing = split_data(adhd,control)
     
     model = SVM(training,testing)
-    model.fit(1,1)
+    model.fit(Kernels.RBF.value)
     model.test()
-    model.fit(0,1)
+    model.fit(Kernels.M_RBF.value)
+    model.test()
+    model.fit(Kernels.M_POLY.value)
+    model.test()
+    model.fit(Kernels.M_RBF_POLY.value)
     model.test()
 
 

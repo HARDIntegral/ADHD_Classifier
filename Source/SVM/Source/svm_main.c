@@ -10,13 +10,13 @@ static w_b* compute_w_b(gsl_vector* alphas, input_data_t* input);
 static PyObject* packup(opt_output* opt);
 
 // Main functions
-PyObject* __get_w_b(PyObject* elements, int rbf, double C) {
-    input_data_t* input = process_input_data(elements, rbf, C);
+PyObject* __get_w_b(PyObject* elements, int k_type , double C) {
+    input_data_t* input = process_input_data(elements, k_type, C);
     opt_output* opt = compute_alphas(input, 1e-1, 3);
     return packup(opt);
 }
 
-input_data_t* process_input_data(PyObject* list, int rbf, double C) {
+input_data_t* process_input_data(PyObject* list, int k_type, double C) {
     Py_ssize_t list_len = PyList_Size(list);
     input_data_t* input = (input_data_t*)malloc(sizeof(input_data_t));
     input->x = (gsl_vector**)malloc(sizeof(gsl_vector)*list_len);
@@ -30,7 +30,7 @@ input_data_t* process_input_data(PyObject* list, int rbf, double C) {
         input->y[i] = PyObject_IsTrue(is_adhd) ? 1 : -1;
     }
     input->x_size = (int)list_len;
-    input->use_rbf = rbf;
+    input->k_type = k_type;
     input->C = C;
     return input;
 }

@@ -8,7 +8,7 @@ typedef struct _input_data {
     gsl_vector** x;
     int x_size;
     int* y;
-    int use_rbf;
+    int k_type;
     double C;
 } input_data_t;
 

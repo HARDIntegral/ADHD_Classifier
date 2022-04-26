@@ -11,7 +11,7 @@
 #include "kernels.h"
 
 // returns vector normal to hyperplane and margin width
-PyObject* __get_w_b(PyObject* elements, int rbf, double C);
-input_data_t* process_input_data(PyObject* n_array, int rbf, double C);
+PyObject* __get_w_b(PyObject* elements, int k_type, double C);
+input_data_t* process_input_data(PyObject* n_array, int k_type, double C);
 
 #endif  /* __SVM_MAIN_H__ */
