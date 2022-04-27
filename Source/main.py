@@ -3,12 +3,20 @@
 from data_manager.data_grabber import split_data, bucket_data
 from data_manager.data_manipulation import avg_slope, avg_value
 from SVM.svm import Kernels, SVM
+import sys
 
 def main():
     
+    locations = 'Data/ADHD/Dataset.json'
+    
+    if len(sys.argv) > 1 and sys.argv[1] == 'research':
+        locations = 'Data/Locations.json'
+        
+    print('Using locations file:',locations);
+    
     # load the data
     
-    adhd , control = bucket_data('Data/Locations.json')
+    adhd , control = bucket_data(locations)
 
     # assign features to the data
     

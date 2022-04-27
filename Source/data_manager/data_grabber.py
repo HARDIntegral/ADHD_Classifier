@@ -30,8 +30,8 @@ def bucket_data(path):
         locations = asJSON(file)
         folder = list(locations.items())[0][-1]
 
-        ADHD    = [ Element(True ,load_data(folder + i)) for i in locations['ADHD']    ]
-        Control = [ Element(False,load_data(folder + i)) for i in locations['Control'] ]
+        ADHD    = [ Element(True ,load_data(folder + '/' + path)) for path in locations['ADHD']    ]
+        Control = [ Element(False,load_data(folder + '/' + path)) for path in locations['Control'] ]
 
         return ( ADHD , Control )
 

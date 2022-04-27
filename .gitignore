@@ -185,4 +185,6 @@ dkms.conf
 bin/
 -c
 ADHD_Database/
+Data/ADHD/
 .~lock.*
+.vscode

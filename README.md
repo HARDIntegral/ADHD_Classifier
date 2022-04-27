@@ -6,7 +6,7 @@
 
 ## Requirements
 
-- **[Python 3]**
+- **[Python 3.10]**
 
   **\+ Modules:**
   
@@ -54,12 +54,29 @@ Tools/Build.sh clean
 
 <br>
 
+### Dataset
+
+*As the original dataset cannot be published,* <br>
+*fake replacement data can be generated with:*
+
+```sh
+Tools/GenerateSamples.sh
+```
+
+<br>
+
 ### Testing
 
 *Execute the test suite with:*
 
 ```sh
 Tools/Test.sh
+```
+
+*To test the real dataset use:*
+
+```sh
+Tools/Test.sh research
 ```
 
 <!----------------------------------------------------------------------------->

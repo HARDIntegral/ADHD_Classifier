@@ -35,6 +35,7 @@ class SVM():
         
         self.pred = [ i / avg_value for i in self.pred ]
         self.pred = [ 1 if i > 1 else 0 for i in self.pred ]
+        
 
         match (self.kernel):
             case 0:
@@ -48,4 +49,4 @@ class SVM():
             case _:
                 pass
             
-        print(classification_report(self.true, self.pred))
+        print(classification_report(self.true,self.pred))

@@ -3,8 +3,8 @@
 
 CC := gcc
 Extension := .c
-Python := "/usr/include/python3.9"
-GSL := "/usr/include/gsl"
+Python := /usr/include/python3.10
+GSL := /usr/include/gsl
 
 
 #	C Source Code
