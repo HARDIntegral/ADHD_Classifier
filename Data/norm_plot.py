@@ -13,7 +13,7 @@ def plot_normal(data_points,x_range,mu,sigma,color,label):
     y = ss.norm.pdf(x,mu,sigma)
     
     plt.plot(x,500*y,color=color,label=label)
-    plt.hist(data_points,color=color,alpha=0.4,bins = 20)
+    plt.hist(data_points,color=color,alpha=0.4,bins = 25)
 
 RBF = [
     67,62,67,58,62,62,62,71,67,62,62,62,50,62,58,71,58,62,58,71,
