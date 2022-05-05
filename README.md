@@ -1,7 +1,7 @@
 # ADHD Classifier [![Badge License]][License]
 
-***Tests for my Research Project***
-
+***Tests for my Research Project***\
+Memory managment went down the drain with this one. Sorry. :(
 <br>
 
 ## Requirements
